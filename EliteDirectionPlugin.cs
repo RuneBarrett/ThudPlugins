@@ -12,6 +12,7 @@ namespace Turbo.Plugins.RuneB
         public IBrush RareBrush { get; set; }
         public IBrush ChampionBrush { get; set; }
         public float HitRange { get; set; }
+        public float StrokeWidth { get; set; }
         public float TooCloseRange { get; set; }
         public bool ShowText { get; set; }
 
@@ -27,10 +28,10 @@ namespace Turbo.Plugins.RuneB
         public override void Load(IController hud)
         {
             base.Load(hud);
-            HitRange = 60;
-            TooCloseRange = 20;
+            HitRange = 55;
+            TooCloseRange = 15;
             ShowText = true;
-
+            StrokeWidth = 3;
             TextFont = Hud.Render.CreateFont("tahoma", 8, 120, 255, 255, 255, true, false, true);
             GreyBrush = Hud.Render.CreateBrush(100, 80, 80, 80, 0);
             RareBrush = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
@@ -76,8 +77,8 @@ namespace Turbo.Plugins.RuneB
         {
             Point start = PointOnLine(center.x, center.y, x, y, 60);
             Point end = PointOnLine(x, y, center.x, center.y, 40);
-            if (distance < HitRange) { brush.DrawLine(start.x, start.y, end.x, end.y, 1); }
-            else GreyBrush.DrawLine(start.x, start.y, end.x, end.y, 1);
+            if (distance < HitRange) { brush.DrawLine(start.x, start.y, end.x, end.y, StrokeWidth); }
+            else GreyBrush.DrawLine(start.x, start.y, end.x, end.y, StrokeWidth-StrokeWidth/2);
         }
 
         public Point MidPoint(float x1, float y1, float x2, float y2)
