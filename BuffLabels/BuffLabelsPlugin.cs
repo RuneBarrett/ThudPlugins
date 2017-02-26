@@ -15,6 +15,8 @@ namespace Turbo.Plugins.RuneB
         public float XPos { get; set; }
         public float SizeModifier { get; set; }
         public float TextSize { get; set; }
+        public float JumpDistance { get; set; }
+        public int NumRows { get; set; }
 
         public float YPosIncrement { get; set; }
 
@@ -28,7 +30,7 @@ namespace Turbo.Plugins.RuneB
 
         public List<Label> Labels { get; set; }
 
-        private float _yPosTemp, _previousTextSize, _labelWidthPercentage, _labelHeightPercentage;
+        private float _yPosTemp, _previousTextSize, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
         private bool _jumped;
         private float hudWidth { get { return Hud.Window.Size.Width; } }
         private float hudHeight { get { return Hud.Window.Size.Height; } }
@@ -56,6 +58,8 @@ namespace Turbo.Plugins.RuneB
 
             SizeModifier = 1f;
             TextSize = 6;
+            JumpDistance = 1.1f;
+            NumRows = 5;
 
             //Label size is based on a percentage of screen width/height
             _labelWidthPercentage = 0.052f;
@@ -80,6 +84,7 @@ namespace Turbo.Plugins.RuneB
             Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
             Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
 
+            _jumpCount = 1;
             _yPosTemp = YPos;
         }
 
@@ -103,6 +108,7 @@ namespace Turbo.Plugins.RuneB
 
             _yPosTemp = YPos;
             _jumped = false;
+            _jumpCount = 0;
 
         }
 
@@ -122,14 +128,12 @@ namespace Turbo.Plugins.RuneB
 
         private float CalculateJump()
         {
-            float xJump = lWidth * 1.2f;
-            if (_yPosTemp > (YPos + (YPosIncrement * SizeModifier * 6)))
+            float xJump = lWidth * JumpDistance * _jumpCount;
+            if (_yPosTemp >= (YPos + (YPosIncrement * SizeModifier * (NumRows - 1))))
             {
                 _yPosTemp = YPos;
-                _jumped = true;
+                _jumpCount+=1;
             }
-            else if (!_jumped)
-                xJump = 0;
             return xJump;
         }
     }
