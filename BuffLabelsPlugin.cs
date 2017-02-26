@@ -1,21 +1,22 @@
 namespace Turbo.Plugins.RuneB
 {
     using Turbo.Plugins.Default;
+    using System.Collections.Generic;
 
-    public class BuffLabelsPlugin : BasePlugin, IInGameWorldPainter
+    public class BuffLabelsPlugin : BasePlugin, IInGameTopPainter
     {
-        public bool IgnorePain { get; set; }
-        public bool Oculus { get; set; }
-        public bool InnerSanctuary { get; set; }
-        public bool FlyingDragon { get; set; }
+        public bool ShowIgnorePain { get; set; }
+        public bool ShowOculus { get; set; }
+        public bool ShowInnerSanctuary { get; set; }
+
+        public bool ChangeTextSize { get; set; }
 
         public float YPos { get; set; }
         public float XPos { get; set; }
+        public float SizeModifier { get; set; }
+        public float TextSize { get; set; }
 
         public float YPosIncrement { get; set; }
-
-        public float LabelWidthPercentage { get; set; }
-        public float LabelHeightPercentage { get; set; }
 
         public bool Debug { get; set; }
 
@@ -24,9 +25,16 @@ namespace Turbo.Plugins.RuneB
         public IBrush BackgroundBrushIP { get; set; }
         public IBrush BackgroundBrushOC { get; set; }
         public IBrush BackgroundBrushIS { get; set; }
-        public IBrush BackgroundBrushFD { get; set; }
 
-        private float _lWidth, LH, Width, Height, YPosTemp;
+        public List<Label> Labels { get; set; }
+
+        private float _yPosTemp, _previousTextSize, _labelWidthPercentage, _labelHeightPercentage;
+        private bool _jumped;
+        private float hudWidth { get { return Hud.Window.Size.Width; } }
+        private float hudHeight { get { return Hud.Window.Size.Height; } }
+
+        private float lWidth { get { return hudWidth * _labelWidthPercentage * SizeModifier; } }
+        private float lHeight { get { return hudHeight * _labelHeightPercentage * SizeModifier; } }
 
         public BuffLabelsPlugin()
         {
@@ -38,76 +46,118 @@ namespace Turbo.Plugins.RuneB
             base.Load(hud);
 
             //Turn labels on and off
-            IgnorePain = true;
-            Oculus = true;
-            InnerSanctuary = true;
-            FlyingDragon = true;
-            
+            ShowIgnorePain = true;
+            ShowOculus = true;
+            ShowInnerSanctuary = true;
+
             //Horizontal and Vertical label positions.
             YPos = 0.65f;
             XPos = 0.5f;
 
+            SizeModifier = 1f;
+            TextSize = 6;
+
             //Label size is based on a percentage of screen width/height
-            LabelWidthPercentage = 0.052f;
-            LabelHeightPercentage = 0.016f;
-            
+            _labelWidthPercentage = 0.052f;
+            _labelHeightPercentage = 0.016f;
+
             //Vertical distance between labels
             YPosIncrement = 0.02f;
 
             //If true labels are always shown
             Debug = false;
 
-            TextFont = Hud.Render.CreateFont("tahoma", 6, 240, 240, 240, 240, true, false, true);
+            ChangeTextSize = false;
+
+            //TextFont = Hud.Render.CreateFont("tahoma", TextSize, 240, 240, 240, 240, true, false, true);
             BorderBrush = Hud.Render.CreateBrush(150, 30, 30, 30, 0);
 
             BackgroundBrushIP = Hud.Render.CreateBrush(100, 100, 225, 100, 0);   // Ignore Pain
             BackgroundBrushOC = Hud.Render.CreateBrush(100, 255, 255, 50, 0);    // Oculus
             BackgroundBrushIS = Hud.Render.CreateBrush(100, 185, 220, 245, 0);   // Inner Sanctuary
-            BackgroundBrushFD = Hud.Render.CreateBrush(100, 50, 200, 255, 0);    // Flying Dragon
 
-            Width = Hud.Window.Size.Width;
-            Height = Hud.Window.Size.Height;
-            _lWidth = Width * LabelWidthPercentage;     // label width
-            LH = Height * LabelHeightPercentage;   // label height
+            Labels = new List<Label>();
+            Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
+            Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
 
-            YPosTemp = YPos;           
+            _yPosTemp = YPos;
         }
 
-        public void PaintWorld(WorldLayer layer)
+        public void PaintTopInGame(ClipState clipState)
         {
-            if (IgnorePain && (Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
-                DrawLabel(BackgroundBrushIP,"Ignore Pain");
+            if (clipState != ClipState.BeforeClip) return;
+            //Allow changing font size from a customize method
+            if (TextFont == null)
+            {
+                ChangeTextSize = false;
+                TextFont = Hud.Render.CreateFont("tahoma", TextSize * SizeModifier, 240, 240, 240, 240, true, false, true);
+            }
 
-            if (Oculus && Hud.Game.Me.Powers.BuffIsActive(402461, 2) || Debug)
-                DrawLabel(BackgroundBrushOC, "Oculus");
+            foreach (Label l in Labels)
+                if (l.Show && (Hud.Game.Me.Powers.BuffIsActive((uint)l.Sno, l.IconCount) || Debug))
+                    DrawLabel(l.LabelBrush, l.NameText);
+            
+            //Avoid showing two IP labels
+            if (ShowIgnorePain && (Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
+                DrawLabel(BackgroundBrushIP, "Ignore Pain");
 
-            if (InnerSanctuary && Hud.Game.Me.Powers.BuffIsActive(317076, 1) || Debug)
-                DrawLabel(BackgroundBrushIS, "Inner Sanctuary");
+            _yPosTemp = YPos;
+            _jumped = false;
 
-            if (FlyingDragon && Hud.Game.Me.Powers.BuffIsActive(246562, 1) || Debug)
-                DrawLabel(BackgroundBrushFD, "Flying Dragon");
-
-            YPosTemp = YPos;
         }
 
 
 
-        private void DrawLabel(IBrush label, string buffText) {
-            YPosTemp += YPosIncrement;
-            BorderBrush.DrawRectangle(Width * XPos - _lWidth * 1.05f * .5f, Height * YPosTemp - LH * 1.1f, _lWidth * 1.05f, LH * 1.2f);
-            label.DrawRectangle(Width * XPos - _lWidth * .5f, Height * YPosTemp - LH, _lWidth, LH);
+        private void DrawLabel(IBrush label, string buffText)
+        {
+            float xJump = CalculateJump();
+
+            BorderBrush.DrawRectangle(hudWidth * XPos - (lWidth * 1.05f * .5f) + xJump, hudHeight * _yPosTemp - lHeight * 1.1f, lWidth * 1.05f, lHeight * 1.2f);
+            label.DrawRectangle(hudWidth * XPos - lWidth * .5f + xJump, hudHeight * _yPosTemp - lHeight, lWidth, lHeight);
 
             var layout = TextFont.GetTextLayout(buffText);
-            TextFont.DrawText(layout, Width * XPos - (layout.Metrics.Width*0.5f), Height * YPosTemp - LH + 2f);
+            TextFont.DrawText(layout, hudWidth * XPos - (layout.Metrics.Width * 0.5f) + xJump, hudHeight * _yPosTemp - lHeight + 2f);
+            _yPosTemp += YPosIncrement * SizeModifier;
+        }
+
+        private float CalculateJump()
+        {
+            float xJump = lWidth * 1.2f;
+            if (_yPosTemp > (YPos + (YPosIncrement * SizeModifier * 6)))
+            {
+                _yPosTemp = YPos;
+                _jumped = true;
+            }
+            else if (!_jumped)
+                xJump = 0;
+            return xJump;
+        }
+    }
+
+    public class Label
+    {
+        public string NameText { get; set; }
+        public int Sno { get; set; }
+        public int IconCount { get; set; }
+        public IBrush LabelBrush { get; set; }
+        public bool Show { get; set; }
+
+        public Label(string NameText, int Sno, int IconCount, IBrush LabelBrush)
+        {
+            this.NameText = NameText;
+            this.Sno = Sno;
+            this.IconCount = IconCount;
+            this.LabelBrush = LabelBrush;
+            Show = true;
+        }
+
+        public Label(string NameText, int Sno, int IconCount, IBrush LabelBrush, bool Show)
+        {
+            this.NameText = NameText;
+            this.Sno = Sno;
+            this.IconCount = IconCount;
+            this.LabelBrush = LabelBrush;
+            this.Show = Show;
         }
     }
 }
-
-/*- Added Flying Dragon
-- Made it easier to change the size and position of the labels
-- Added Inner Sanctuary 
-- Refactored code, made labels and text more visible and added borders.
-- Fixed naming convention and accessors. Added Ignore Pain. Renamed to BuffLabelsPlugin.cs
-- Fixed bug: IP was only working for barbs.
-- There are now only one X and one Y variable controlling the whole "box" of labels. The potential gab between labels, when for example Ignore Pain and Inner Sanctum was active but Oculus was not, has been removed. Instead the vertical positions are generated based on the amount of active buffs. 
--Added textcentering based on text width*/
