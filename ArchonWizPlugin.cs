@@ -104,6 +104,8 @@ namespace Turbo.Plugins.RuneB
 
         public void PaintTopInGame(ClipState clipState)
         {
+            if (clipState != ClipState.BeforeClip) return;
+
             if (Hud.Game.IsInGame && Hud.Game.Me.HeroClassDefinition.HeroClass == HeroClass.Wizard && !(Hud.Game.Me.IsInTown && !ShowInTown))
             {
                 var me = Hud.Game.Me;
