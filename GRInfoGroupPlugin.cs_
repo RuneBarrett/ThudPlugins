@@ -1,0 +1,71 @@
+using System;
+using System.Globalization;
+using Turbo.Plugins.Default;
+
+namespace Turbo.Plugins.RuneB
+{
+
+    public class GRInfoGroupPlugin : BasePlugin
+    {
+
+        public TopLabelDecorator PhysicalDecorator { get; set; }
+
+        public IFont Font { get; set; }
+        public IBrush BorderBrush { get; set; }
+
+        public GRInfoGroupPlugin()
+        {
+            Enabled = true;
+        }
+
+        public override void Load(IController hud)
+        {
+            base.Load(hud);
+
+            Font = Hud.Render.CreateFont("tahoma", 6, 240, 240, 240, 240, true, false, true);
+            BorderBrush = Hud.Render.CreateBrush(150, 30, 30, 30, 0);
+
+            PhysicalDecorator = new TopLabelDecorator(Hud)
+            {
+                BackgroundBrush = Hud.Render.CreateBrush(180, 155, 6, 0, 0),
+                BorderBrush = Hud.Render.CreateBrush(255, 0, 0, 0, -1),
+                TextFont = Font,//Hud.Render.CreateFont("tahoma", 6, 255, 255, 255, 255, false, false, true),
+                TextFunc = () => "yo"/*test()*//*Hud.Game.Me.Offense.BonusToPhysical > 0 ? Convert.ToInt32(Hud.Game.Me.Offense.BonusToPhysical * 100).ToString("D", CultureInfo.InvariantCulture) : ""*/,
+                HintFunc = () => "physical damage %"
+            };
+
+        }
+
+        public override void PaintTopInGame(ClipState clipState)
+        {
+            if (Hud.Render.UiHidden) return;
+
+            if (clipState == ClipState.BeforeClip)
+            {
+                //var uiRect = Hud.Render.GetUiElement("Root.NormalLayer.game_dialog_backgroundScreenPC.game_window_hud_overlay").Rectangle;
+                float x = Hud.Window.Size.Width * .92f;
+                float y = Hud.Window.Size.Height * .65f;
+                float bgW = Hud.Window.Size.Width * 0.068f;
+                float bgH = Hud.Window.Size.Height * 0.18f;
+
+                float iconW = Hud.Window.Size.Height * 0.017f;
+                float iconH = Hud.Window.Size.Height * 0.014f;
+
+                float leftBarW = Hud.Window.Size.Width * 0.027f;
+
+                float marginY = Hud.Window.Size.Height * 0.008f;
+
+                BorderBrush.DrawRectangle(x, y - marginY, bgW, bgH);
+
+                //PhysicalDecorator.Paint(x + w * 1, y, w, h, HorizontalAlign.Center);
+                PhysicalDecorator.Paint(x+leftBarW, y + marginY + iconH * 1, iconW, iconH, HorizontalAlign.Center);
+            }
+        }
+
+        public string test() {
+            return "test";
+        }
+
+    }
+
+}
