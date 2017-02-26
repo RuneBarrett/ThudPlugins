@@ -29,10 +29,11 @@ namespace Turbo.Plugins.RuneB
 
 
                 //POSITION, MARGIN & SIZE
-                //plugin.YPos = 0.55f; Horizontal position (0 == left, 1 == right)
-                //plugin.XPos = 0.5f; Vertical position (0 == top, 1 == bottom)
+                //plugin.YPos = 0.65f; //Vertical position (0 == top, 1 == bottom)
+                //plugin.XPos = 0.2f; //Horizontal position (0 == left, 1 == right)
                 //plugin.YPosIncrement = 0.01f; // Distance between labels
-                plugin.SizeModifier = 1.2f; // change size of labels and text.
+                plugin.SizeModifier = 1.1f; // change size of labels and text.
+                plugin.NumRows = 10;
 
                 /*How to add buffs:
                 plugin.Labels.Add(new RuneB.Label(<Shown buff name>, <Sno>, <Icon count>, <A brush>));
@@ -45,9 +46,9 @@ namespace Turbo.Plugins.RuneB
                 plugin.Labels.Add(new RuneB.Label("Flying Dragon", 246562, 1, Hud.Render.CreateBrush(100, 50, 200, 255, 0)));
 
                 //Wizard
-                plugin.Labels.Add(new RuneB.Label("Archon", 134872, 2, Hud.Render.CreateBrush(100, 0, 80, 215, 0))); 
-                plugin.Labels.Add(new RuneB.Label("Magic Weapon", 76108, 0, Hud.Render.CreateBrush(100, 0, 45, 130, 0))); 
-                plugin.Labels.Add(new RuneB.Label("Energy Armor", 86991, 0, Hud.Render.CreateBrush(100, 140, 1, 170, 0)));
+                //plugin.Labels.Add(new RuneB.Label("Archon", 134872, 2, Hud.Render.CreateBrush(100, 0, 80, 215, 0))); 
+                //plugin.Labels.Add(new RuneB.Label("Magic Weapon", 76108, 0, Hud.Render.CreateBrush(100, 0, 45, 130, 0))); 
+                //plugin.Labels.Add(new RuneB.Label("Energy Armor", 86991, 0, Hud.Render.CreateBrush(100, 140, 1, 170, 0)));
 
                 //Barb
                 plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));

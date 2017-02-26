@@ -59,7 +59,7 @@ namespace Turbo.Plugins.RuneB
             SizeModifier = 1f;
             TextSize = 6;
             JumpDistance = 1.1f;
-            NumRows = 5;
+            NumRows = 6;
 
             //Label size is based on a percentage of screen width/height
             _labelWidthPercentage = 0.052f;
@@ -81,6 +81,9 @@ namespace Turbo.Plugins.RuneB
             BackgroundBrushIS = Hud.Render.CreateBrush(100, 185, 220, 245, 0);   // Inner Sanctuary
 
             Labels = new List<Label>();
+            //temporary fix dummylabel
+            //Labels.Add(new Label("", 402461, 2, Hud.Render.CreateBrush(0, 255, 255, 255, 0), true));
+
             Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
             Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
 
@@ -91,6 +94,7 @@ namespace Turbo.Plugins.RuneB
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
+
             //Allow changing font size from a customize method
             if (TextFont == null)
             {
@@ -102,7 +106,7 @@ namespace Turbo.Plugins.RuneB
                 if (l.Show && (Hud.Game.Me.Powers.BuffIsActive((uint)l.Sno, l.IconCount) || Debug))
                     DrawLabel(l.LabelBrush, l.NameText);
             
-            //Avoid showing two IP labels
+            //Avoid potentially showing two IP labels
             if (ShowIgnorePain && (Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
                 DrawLabel(BackgroundBrushIP, "Ignore Pain");
 
@@ -116,6 +120,7 @@ namespace Turbo.Plugins.RuneB
 
         private void DrawLabel(IBrush label, string buffText)
         {
+            _yPosTemp += YPosIncrement * SizeModifier;
             float xJump = CalculateJump();
 
             BorderBrush.DrawRectangle(hudWidth * XPos - (lWidth * 1.05f * .5f) + xJump, hudHeight * _yPosTemp - lHeight * 1.1f, lWidth * 1.05f, lHeight * 1.2f);
@@ -123,7 +128,7 @@ namespace Turbo.Plugins.RuneB
 
             var layout = TextFont.GetTextLayout(buffText);
             TextFont.DrawText(layout, hudWidth * XPos - (layout.Metrics.Width * 0.5f) + xJump, hudHeight * _yPosTemp - lHeight + 2f);
-            _yPosTemp += YPosIncrement * SizeModifier;
+
         }
 
         private float CalculateJump()
