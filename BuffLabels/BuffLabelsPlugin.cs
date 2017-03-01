@@ -16,12 +16,13 @@ namespace Turbo.Plugins.RuneB
         public float SizeModifier { get; set; }
         public float TextSize { get; set; }
         public float JumpDistance { get; set; }
+        public float SmoothSpeed { get; set; }
         public int NumRows { get; set; }
 
         public float YPosIncrement { get; set; }
 
         public bool Debug { get; set; }
-        public bool SmootMovement { get; set; }
+        public bool SmoothMovement { get; set; }
 
         public IFont TextFont { get; set; }
         public IBrush BorderBrush { get; set; }
@@ -31,16 +32,17 @@ namespace Turbo.Plugins.RuneB
 
         public List<Label> Labels { get; set; }
 
-        private List<Label> _debugLabels;
-        private float _yPosTemp, _xPosTemp, _xPosGoal, _previousTextSize, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
+        private float _yPosTemp, _xPosTemp, _xPosGoal, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
         private bool _jumped, _debugStarted, _debugDone, _debugAlreadyAdded;
         private int _debugAddShifter = 0, _activeBuffsCount = 0;
-        private IWatch debugWatch;
+
         private float hudWidth { get { return Hud.Window.Size.Width; } }
         private float hudHeight { get { return Hud.Window.Size.Height; } }
-
         private float lWidth { get { return hudWidth * _labelWidthPercentage * SizeModifier; } }
         private float lHeight { get { return hudHeight * _labelHeightPercentage * SizeModifier; } }
+
+        private List<Label> _debugLabels;
+        private IWatch debugWatch;
 
         public BuffLabelsPlugin()
         {
@@ -74,8 +76,8 @@ namespace Turbo.Plugins.RuneB
 
             //If true labels are always shown
             Debug = false;
-            SmootMovement = true;
-
+            SmoothMovement = true;
+            SmoothSpeed = 0.05f;
             debugWatch = Hud.CreateWatch();
             debugWatch.Restart();
 
@@ -113,7 +115,7 @@ namespace Turbo.Plugins.RuneB
                 if (l.Show && (Hud.Game.Me.Powers.BuffIsActive((uint)l.Sno, l.IconCount) || Debug))
                     DrawLabel(l.LabelBrush, l.NameText);
 
-            //Avoid potentially showing two IP labels
+            //Avoid potentially showing two IP labels. TODO: Find a better way to do this - without adding a list of conditions to the Label class since this would make adding new buffs more complex.
             if (ShowIgnorePain && (Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
                 DrawLabel(BackgroundBrushIP, "Ignore Pain");
 
@@ -166,10 +168,10 @@ namespace Turbo.Plugins.RuneB
                 jump = (_activeBuffsCount-1) / NumRows;
                 _xPosGoal = (_jumpCount < 1) ? XPos : (float)(XPos - (_labelWidthPercentage * SizeModifier * ((_activeBuffsCount * .01f) + 1) * (jump)) / 2);
             }
-            if (SmootMovement)
+            if (SmoothMovement)
             {
-                if (_xPosTemp < _xPosGoal) _xPosTemp += (_xPosGoal - _xPosTemp) * 0.05f;
-                if (_xPosTemp > _xPosGoal) _xPosTemp -= (_xPosTemp - _xPosGoal) * 0.05f;
+                if (_xPosTemp < _xPosGoal) _xPosTemp += (_xPosGoal - _xPosTemp) * SmoothSpeed;
+                if (_xPosTemp > _xPosGoal) _xPosTemp -= (_xPosTemp - _xPosGoal) * SmoothSpeed;
             }
             else _xPosTemp = _xPosGoal;
         }

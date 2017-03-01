@@ -20,14 +20,15 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.BuffLabelsPlugin>(plugin =>
             {
-                plugin.Debug = true; // show all labels, and add them slowly over time to see animations.
+                //plugin.Debug = true; // show all labels, and add them slowly over time to see animations.
 
                 //POSITION, MARGIN, SIZE & ANIMATION
                 //plugin.YPos = 0.15f; //Vertical position (0 == top, 1 == bottom)
                 //plugin.XPos = 0.5f; //Horizontal position (0 == left, 1 == right)
 
                 //plugin.YPosIncrement = 0.01f; // Vertical distance between labels
-                //plugin.SmootMovement = false; //Animate movement to new position if true, else jump straight there.
+                //plugin.SmoothMovement = false; //Animate movement to new position if true, else jump straight there.
+                plugin.SmoothSpeed = 0.1f; //Animate movement to new position if true, else jump straight there.
 
                 plugin.SizeModifier = 1.2f; // change size of labels and text.
                 //plugin.NumRows = 5; //The amount of rows allowed. (if 1, all labels will align horizontally. Set a number higher than the highest number of buffs to keep all in one column.)
