@@ -20,8 +20,7 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.BuffLabelsPlugin>(plugin =>
             {
-                plugin.Debug = true; // show all labels, and add them slowly over time.
-
+                //plugin.Debug = true; // show all labels, and add them slowly over time to see animations.
 
                 //POSITION, MARGIN & SIZE -------------
                 //plugin.YPos = 0.5f; //Vertical position (0 == top, 1 == bottom)
@@ -52,9 +51,6 @@ namespace Turbo.Plugins.RuneB
                 //Crusader
                 plugin.Labels.Add(new RuneB.Label("Akarat's Champion", 269032, 1, Hud.Render.CreateBrush(100, 70, 50, 40, 0)));
                 plugin.Labels.Add(new RuneB.Label("Iron Skin", 291804, 0, Hud.Render.CreateBrush(100, 90, 60, 70, 0)));
-
-                plugin.Labels.Add(new RuneB.Label("Flying Dragon", 246562, 1, Hud.Render.CreateBrush(100, 50, 200, 255, 0)));
-
             });
         }
 

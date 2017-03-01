@@ -184,7 +184,7 @@ namespace Turbo.Plugins.RuneB
             int time = (int)debugWatch.ElapsedMilliseconds / 1000;
             if (time != _debugAddShifter)
                 _debugAlreadyAdded = false;
-            if (time % 3 == 0 && !_debugAlreadyAdded)
+            if (time % 2 == 0 && !_debugAlreadyAdded)
             {
                 _debugAlreadyAdded = true;
                 _debugAddShifter = time;
