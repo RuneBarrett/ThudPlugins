@@ -30,8 +30,11 @@ namespace Turbo.Plugins.RuneB
 
         public List<Label> Labels { get; set; }
 
-        private float _yPosTemp, _previousTextSize, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
-        private bool _jumped;
+        private List<Label> _debugLabels;
+        private float _yPosTemp, _xPosTemp, _xPosGoal, _previousTextSize, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
+        private bool _jumped, _debugStarted = false, _debugDone = false, _debugAlreadyAdded = false;
+        private int _debugAddShifter = 0;
+        private IWatch debugWatch;
         private float hudWidth { get { return Hud.Window.Size.Width; } }
         private float hudHeight { get { return Hud.Window.Size.Height; } }
 
@@ -58,21 +61,21 @@ namespace Turbo.Plugins.RuneB
 
             SizeModifier = 1f;
             TextSize = 6;
-            JumpDistance = 1.1f;
+            JumpDistance = 1.07f;
             NumRows = 6;
 
             //Label size is based on a percentage of screen width/height
-            _labelWidthPercentage = 0.052f;
+            _labelWidthPercentage = 0.055f;
             _labelHeightPercentage = 0.016f;
 
             //Vertical distance between labels
-            YPosIncrement = 0.02f;
+            YPosIncrement = 0.021f;
 
             //If true labels are always shown
             Debug = false;
-
             ChangeTextSize = false;
-
+            debugWatch = Hud.CreateWatch();
+            debugWatch.Restart();
             //TextFont = Hud.Render.CreateFont("tahoma", TextSize, 240, 240, 240, 240, true, false, true);
             BorderBrush = Hud.Render.CreateBrush(150, 30, 30, 30, 0);
 
@@ -81,6 +84,7 @@ namespace Turbo.Plugins.RuneB
             BackgroundBrushIS = Hud.Render.CreateBrush(100, 185, 220, 245, 0);   // Inner Sanctuary
 
             Labels = new List<Label>();
+
             //temporary fix dummylabel
             //Labels.Add(new Label("", 402461, 2, Hud.Render.CreateBrush(0, 255, 255, 255, 0), true));
 
@@ -89,6 +93,8 @@ namespace Turbo.Plugins.RuneB
 
             _jumpCount = 1;
             _yPosTemp = YPos;
+            _xPosTemp = XPos;
+            if (NumRows < 1) NumRows = 1;
         }
 
         public void PaintTopInGame(ClipState clipState)
@@ -105,15 +111,27 @@ namespace Turbo.Plugins.RuneB
             foreach (Label l in Labels)
                 if (l.Show && (Hud.Game.Me.Powers.BuffIsActive((uint)l.Sno, l.IconCount) || Debug))
                     DrawLabel(l.LabelBrush, l.NameText);
-            
+
             //Avoid potentially showing two IP labels
-            if (ShowIgnorePain && (Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
+            if (ShowIgnorePain && !(Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
                 DrawLabel(BackgroundBrushIP, "Ignore Pain");
 
             _yPosTemp = YPos;
+
+            _xPosGoal = (_jumpCount <= 1) ? XPos : (float)(XPos - (_labelWidthPercentage * (_jumpCount * (.032f) + 1) * _jumpCount) / 2);
+            if (_xPosTemp < _xPosGoal)
+                _xPosTemp += (_xPosGoal-_xPosTemp)*0.01f;
+            if (_xPosTemp > _xPosGoal)
+                _xPosTemp -= (_xPosTemp - _xPosGoal)*0.05f;
+            //var layouta = TextFont.GetTextLayout("0.5f-(" + _labelWidthPercentage + "*" + (_jumpCount * (.036f) + 1) + "*" + _jumpCount + ")/2 = \n " + _xPosTemp);
+            //TextFont.DrawText(layouta, hudWidth * 0.5f - (layouta.Metrics.Width * 0.5f), hudHeight * .3f);
+
             _jumped = false;
             _jumpCount = 0;
-
+            if (Debug && !_debugDone)
+            {
+                DebugTimedAdd();
+            }
         }
 
 
@@ -122,24 +140,56 @@ namespace Turbo.Plugins.RuneB
         {
             _yPosTemp += YPosIncrement * SizeModifier;
             float xJump = CalculateJump();
+            float tempXPos = (_jumpCount < 1) ? XPos : (float)(XPos - (_labelWidthPercentage * _jumpCount) / 2);
 
-            BorderBrush.DrawRectangle(hudWidth * XPos - (lWidth * 1.05f * .5f) + xJump, hudHeight * _yPosTemp - lHeight * 1.1f, lWidth * 1.05f, lHeight * 1.2f);
-            label.DrawRectangle(hudWidth * XPos - lWidth * .5f + xJump, hudHeight * _yPosTemp - lHeight, lWidth, lHeight);
+
+
+            //float tempXPos =(float) (XPos - (lWidth * _jumpCount) / 2);
+            BorderBrush.DrawRectangle(hudWidth * _xPosTemp - (lWidth * 1.05f * .5f) + xJump, hudHeight * _yPosTemp - lHeight * 1.1f, lWidth * 1.05f, lHeight * 1.2f);
+            label.DrawRectangle(hudWidth * _xPosTemp - lWidth * .5f + xJump, hudHeight * _yPosTemp - lHeight, lWidth, lHeight);
 
             var layout = TextFont.GetTextLayout(buffText);
-            TextFont.DrawText(layout, hudWidth * XPos - (layout.Metrics.Width * 0.5f) + xJump, hudHeight * _yPosTemp - lHeight + 2f);
+            TextFont.DrawText(layout, hudWidth * _xPosTemp - (layout.Metrics.Width * 0.5f) + xJump, hudHeight * _yPosTemp - lHeight + 2f);
 
         }
 
         private float CalculateJump()
         {
             float xJump = lWidth * JumpDistance * _jumpCount;
-            if (_yPosTemp >= (YPos + (YPosIncrement * SizeModifier * (NumRows - 1))))
+            if (_yPosTemp > (YPos + (YPosIncrement * SizeModifier * (NumRows - 1))))
             {
                 _yPosTemp = YPos;
-                _jumpCount+=1;
+                _jumpCount += 1;
             }
             return xJump;
+        }
+
+        private void DebugTimedAdd()
+        {
+            if (!_debugStarted)
+            {
+                _debugLabels = new List<Label>();
+                foreach (Label l in Labels)
+                    _debugLabels.Add(l);
+                Labels.Clear();
+                _debugStarted = true;
+            }
+
+            int time = (int)debugWatch.ElapsedMilliseconds / 1000;
+            if (time != _debugAddShifter)
+                _debugAlreadyAdded = false;
+            if (time % 3 == 0 && !_debugAlreadyAdded)
+            {
+                _debugAlreadyAdded = true;
+                _debugAddShifter = time;
+                var layout1 = TextFont.GetTextLayout("" + time);
+                TextFont.DrawText(layout1, hudWidth * 0.2f - (layout1.Metrics.Width * 0.5f), hudHeight * .15f);
+
+                Labels.Add(_debugLabels[0]);
+                _debugLabels.RemoveAt(0);
+            }
+            if (_debugLabels.Count == 0)
+                _debugDone = true;
         }
     }
 
