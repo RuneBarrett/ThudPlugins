@@ -113,16 +113,24 @@ namespace Turbo.Plugins.RuneB
                     DrawLabel(l.LabelBrush, l.NameText);
 
             //Avoid potentially showing two IP labels
-            if (ShowIgnorePain && !(Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
+            if (ShowIgnorePain && (Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
                 DrawLabel(BackgroundBrushIP, "Ignore Pain");
 
             _yPosTemp = YPos;
 
-            _xPosGoal = (_jumpCount <= 1) ? XPos : (float)(XPos - (_labelWidthPercentage * (_jumpCount * (.032f) + 1) * _jumpCount) / 2);
-            if (_xPosTemp < _xPosGoal)
-                _xPosTemp += (_xPosGoal-_xPosTemp)*0.01f;
-            if (_xPosTemp > _xPosGoal)
-                _xPosTemp -= (_xPosTemp - _xPosGoal)*0.05f;
+            var jump = _jumpCount;
+            if (Labels.Count % NumRows == 0)
+            {
+                jump = Labels.Count / NumRows;
+
+                //var jump = _jumpCount;
+                _xPosGoal = (_jumpCount < 1) ? XPos : (float)(XPos - (_labelWidthPercentage * (Labels.Count * .035f + 1) * (jump)) / 2);
+            }  
+            if (_xPosTemp < _xPosGoal) _xPosTemp += (_xPosGoal-_xPosTemp)*0.05f;
+            if (_xPosTemp > _xPosGoal) _xPosTemp -= (_xPosTemp - _xPosGoal)*0.05f;
+
+            var layout1 = TextFont.GetTextLayout("" + _jumpCount + " AND " + jump);
+            TextFont.DrawText(layout1, hudWidth * 0.2f - (layout1.Metrics.Width * 0.5f), hudHeight * .1f);
             //var layouta = TextFont.GetTextLayout("0.5f-(" + _labelWidthPercentage + "*" + (_jumpCount * (.036f) + 1) + "*" + _jumpCount + ")/2 = \n " + _xPosTemp);
             //TextFont.DrawText(layouta, hudWidth * 0.5f - (layouta.Metrics.Width * 0.5f), hudHeight * .3f);
 
@@ -140,9 +148,7 @@ namespace Turbo.Plugins.RuneB
         {
             _yPosTemp += YPosIncrement * SizeModifier;
             float xJump = CalculateJump();
-            float tempXPos = (_jumpCount < 1) ? XPos : (float)(XPos - (_labelWidthPercentage * _jumpCount) / 2);
-
-
+            //float tempXPos = (float)(XPos - (_labelWidthPercentage * (_jumpCount-1)) / 2); //(_jumpCount < 1) ? XPos : 
 
             //float tempXPos =(float) (XPos - (lWidth * _jumpCount) / 2);
             BorderBrush.DrawRectangle(hudWidth * _xPosTemp - (lWidth * 1.05f * .5f) + xJump, hudHeight * _yPosTemp - lHeight * 1.1f, lWidth * 1.05f, lHeight * 1.2f);
@@ -156,7 +162,7 @@ namespace Turbo.Plugins.RuneB
         private float CalculateJump()
         {
             float xJump = lWidth * JumpDistance * _jumpCount;
-            if (_yPosTemp > (YPos + (YPosIncrement * SizeModifier * (NumRows - 1))))
+            if (_yPosTemp >= (YPos + (YPosIncrement * SizeModifier * (NumRows))))
             {
                 _yPosTemp = YPos;
                 _jumpCount += 1;

@@ -20,7 +20,7 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.BuffLabelsPlugin>(plugin =>
             {
-                plugin.Debug = true; // show all labels.
+                plugin.Debug = true; // show all labels, and add them slowly over time.
 
 
                 //POSITION, MARGIN & SIZE -------------
@@ -28,7 +28,7 @@ namespace Turbo.Plugins.RuneB
                 //plugin.XPos = 0.2f; //Horizontal position (0 == left, 1 == right)
                 //plugin.YPosIncrement = 0.01f; // Distance between labels
                 plugin.SizeModifier = 1.2f; // change size of labels and text.
-                plugin.NumRows = 3; //The amount of rows allowed. (if 1, all labels will align horizontally. 2)
+                plugin.NumRows = 2; //The amount of rows allowed. (if 1, all labels will align horizontally. 2)
                 //-------------
 
                 /*How to add buffs:
