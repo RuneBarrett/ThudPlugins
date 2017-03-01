@@ -21,6 +21,7 @@ namespace Turbo.Plugins.RuneB
         public float YPosIncrement { get; set; }
 
         public bool Debug { get; set; }
+        public bool SmootMovement { get; set; }
 
         public IFont TextFont { get; set; }
         public IBrush BorderBrush { get; set; }
@@ -32,8 +33,8 @@ namespace Turbo.Plugins.RuneB
 
         private List<Label> _debugLabels;
         private float _yPosTemp, _xPosTemp, _xPosGoal, _previousTextSize, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
-        private bool _jumped, _debugStarted = false, _debugDone = false, _debugAlreadyAdded = false;
-        private int _debugAddShifter = 0;
+        private bool _jumped, _debugStarted, _debugDone, _debugAlreadyAdded;
+        private int _debugAddShifter = 0, _activeBuffsCount = 0;
         private IWatch debugWatch;
         private float hudWidth { get { return Hud.Window.Size.Width; } }
         private float hudHeight { get { return Hud.Window.Size.Height; } }
@@ -60,9 +61,9 @@ namespace Turbo.Plugins.RuneB
             XPos = 0.5f;
 
             SizeModifier = 1f;
-            TextSize = 6;
+            TextSize = 7;
             JumpDistance = 1.07f;
-            NumRows = 6;
+            NumRows = 1;
 
             //Label size is based on a percentage of screen width/height
             _labelWidthPercentage = 0.055f;
@@ -73,10 +74,11 @@ namespace Turbo.Plugins.RuneB
 
             //If true labels are always shown
             Debug = false;
-            ChangeTextSize = false;
+            SmootMovement = true;
+
             debugWatch = Hud.CreateWatch();
             debugWatch.Restart();
-            //TextFont = Hud.Render.CreateFont("tahoma", TextSize, 240, 240, 240, 240, true, false, true);
+
             BorderBrush = Hud.Render.CreateBrush(150, 30, 30, 30, 0);
 
             BackgroundBrushIP = Hud.Render.CreateBrush(100, 100, 225, 100, 0);   // Ignore Pain
@@ -84,9 +86,6 @@ namespace Turbo.Plugins.RuneB
             BackgroundBrushIS = Hud.Render.CreateBrush(100, 185, 220, 245, 0);   // Inner Sanctuary
 
             Labels = new List<Label>();
-
-            //temporary fix dummylabel
-            //Labels.Add(new Label("", 402461, 2, Hud.Render.CreateBrush(0, 255, 255, 255, 0), true));
 
             Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
             Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
@@ -101,13 +100,15 @@ namespace Turbo.Plugins.RuneB
         {
             if (clipState != ClipState.BeforeClip) return;
 
-            //Allow changing font size from a customize method
+
+
+            //Allow changing font size from a customize method by instatiating here instead of in Load
             if (TextFont == null)
             {
-                ChangeTextSize = false;
                 TextFont = Hud.Render.CreateFont("tahoma", TextSize * SizeModifier, 240, 240, 240, 240, true, false, true);
             }
 
+            //Draw all labels
             foreach (Label l in Labels)
                 if (l.Show && (Hud.Game.Me.Powers.BuffIsActive((uint)l.Sno, l.IconCount) || Debug))
                     DrawLabel(l.LabelBrush, l.NameText);
@@ -116,58 +117,61 @@ namespace Turbo.Plugins.RuneB
             if (ShowIgnorePain && (Hud.Game.Me.Powers.BuffIsActive(79528, 0) || Hud.Game.Me.Powers.BuffIsActive(79528, 1)) || Debug)
                 DrawLabel(BackgroundBrushIP, "Ignore Pain");
 
+            //Smooth horizontal movement
+            CalculateXPosTemp();
+            
+            //Reset vars
             _yPosTemp = YPos;
-
-            var jump = _jumpCount;
-            if (Labels.Count % NumRows == 0)
-            {
-                jump = Labels.Count / NumRows;
-
-                //var jump = _jumpCount;
-                _xPosGoal = (_jumpCount < 1) ? XPos : (float)(XPos - (_labelWidthPercentage * (Labels.Count * .035f + 1) * (jump)) / 2);
-            }  
-            if (_xPosTemp < _xPosGoal) _xPosTemp += (_xPosGoal-_xPosTemp)*0.05f;
-            if (_xPosTemp > _xPosGoal) _xPosTemp -= (_xPosTemp - _xPosGoal)*0.05f;
-
-            var layout1 = TextFont.GetTextLayout("" + _jumpCount + " AND " + jump);
-            TextFont.DrawText(layout1, hudWidth * 0.2f - (layout1.Metrics.Width * 0.5f), hudHeight * .1f);
-            //var layouta = TextFont.GetTextLayout("0.5f-(" + _labelWidthPercentage + "*" + (_jumpCount * (.036f) + 1) + "*" + _jumpCount + ")/2 = \n " + _xPosTemp);
-            //TextFont.DrawText(layouta, hudWidth * 0.5f - (layouta.Metrics.Width * 0.5f), hudHeight * .3f);
-
             _jumped = false;
             _jumpCount = 0;
+            _activeBuffsCount = 0;
+
+            //Add labels one by one if debug
             if (Debug && !_debugDone)
             {
                 DebugTimedAdd();
             }
         }
 
-
-
         private void DrawLabel(IBrush label, string buffText)
         {
+            _activeBuffsCount++;
             _yPosTemp += YPosIncrement * SizeModifier;
             float xJump = CalculateJump();
-            //float tempXPos = (float)(XPos - (_labelWidthPercentage * (_jumpCount-1)) / 2); //(_jumpCount < 1) ? XPos : 
 
-            //float tempXPos =(float) (XPos - (lWidth * _jumpCount) / 2);
             BorderBrush.DrawRectangle(hudWidth * _xPosTemp - (lWidth * 1.05f * .5f) + xJump, hudHeight * _yPosTemp - lHeight * 1.1f, lWidth * 1.05f, lHeight * 1.2f);
             label.DrawRectangle(hudWidth * _xPosTemp - lWidth * .5f + xJump, hudHeight * _yPosTemp - lHeight, lWidth, lHeight);
 
             var layout = TextFont.GetTextLayout(buffText);
-            TextFont.DrawText(layout, hudWidth * _xPosTemp - (layout.Metrics.Width * 0.5f) + xJump, hudHeight * _yPosTemp - lHeight + 2f);
+            TextFont.DrawText(layout, hudWidth * _xPosTemp - (layout.Metrics.Width * 0.5f) + xJump, hudHeight * _yPosTemp - (layout.Metrics.Height * 1.1f));
 
         }
 
         private float CalculateJump()
         {
             float xJump = lWidth * JumpDistance * _jumpCount;
-            if (_yPosTemp >= (YPos + (YPosIncrement * SizeModifier * (NumRows))))
+            if (_yPosTemp >= (YPos + (YPosIncrement * SizeModifier * .9f * (NumRows))))
             {
                 _yPosTemp = YPos;
                 _jumpCount += 1;
             }
             return xJump;
+        }
+
+        private void CalculateXPosTemp()
+        {
+            var jump = _jumpCount;
+            if (_activeBuffsCount % NumRows == 0)
+            {
+                jump = (_activeBuffsCount-1) / NumRows;
+                _xPosGoal = (_jumpCount < 1) ? XPos : (float)(XPos - (_labelWidthPercentage * SizeModifier * ((_activeBuffsCount * .01f) + 1) * (jump)) / 2);
+            }
+            if (SmootMovement)
+            {
+                if (_xPosTemp < _xPosGoal) _xPosTemp += (_xPosGoal - _xPosTemp) * 0.05f;
+                if (_xPosTemp > _xPosGoal) _xPosTemp -= (_xPosTemp - _xPosGoal) * 0.05f;
+            }
+            else _xPosTemp = _xPosGoal;
         }
 
         private void DebugTimedAdd()
@@ -197,6 +201,7 @@ namespace Turbo.Plugins.RuneB
             if (_debugLabels.Count == 0)
                 _debugDone = true;
         }
+
     }
 
     public class Label
