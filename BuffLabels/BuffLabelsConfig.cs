@@ -28,7 +28,7 @@ namespace Turbo.Plugins.RuneB
 
                 //plugin.YPosIncrement = 0.01f; // Vertical distance between labels
                 //plugin.SmoothMovement = false; // if true, animate movement to new position. else, jump straight there.
-                plugin.SmoothSpeed = 0.1f; //Animate speed.
+                plugin.SmoothSpeed = 0.1f; //Animation speed.
 
                 plugin.SizeModifier = 1.2f; // change size of labels and text.
                 //plugin.NumRows = 5; //The amount of rows allowed. (if 1, all labels will align horizontally. Set a number higher than the highest number of buffs to keep all in one column.)
