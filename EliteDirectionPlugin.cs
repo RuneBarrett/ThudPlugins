@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Turbo.Plugins.Default;
 
 namespace Turbo.Plugins.RuneB
@@ -63,12 +61,12 @@ namespace Turbo.Plugins.RuneB
                         textDistanceAway += 30;
                     }
 
-                    if (monster.Rarity == ActorRarity.Rare)                   
+                    if (monster.Rarity == ActorRarity.Rare)
                         DrawLineToMonster(RareBrush, x, y, mobDistance);
-                    
-                    if (monster.Rarity == ActorRarity.Champion)                    
+
+                    if (monster.Rarity == ActorRarity.Champion)
                         DrawLineToMonster(ChampionBrush, x, y, mobDistance);
-                    
+
                 }
             }
         }
@@ -78,7 +76,7 @@ namespace Turbo.Plugins.RuneB
             Point start = PointOnLine(center.x, center.y, x, y, 60);
             Point end = PointOnLine(x, y, center.x, center.y, 40);
             if (distance < HitRange) { brush.DrawLine(start.x, start.y, end.x, end.y, StrokeWidth); }
-            else GreyBrush.DrawLine(start.x, start.y, end.x, end.y, StrokeWidth-StrokeWidth/2);
+            else GreyBrush.DrawLine(start.x, start.y, end.x, end.y, StrokeWidth - StrokeWidth / 2);
         }
 
         public Point MidPoint(float x1, float y1, float x2, float y2)
