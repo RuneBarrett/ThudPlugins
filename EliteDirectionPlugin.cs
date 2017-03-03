@@ -3,15 +3,16 @@ using Turbo.Plugins.Default;
 
 namespace Turbo.Plugins.RuneB
 {
-    public class EliteDirectionPlugin : BasePlugin, IInGameWorldPainter
+    public class EliteDirectionPlugin : BasePlugin, IInGameTopPainter
     {
         public IFont TextFont { get; set; }
         public IBrush GreyBrush { get; set; }
         public IBrush RareBrush { get; set; }
         public IBrush ChampionBrush { get; set; }
-        public float HitRange { get; set; }
+        public IBrush BossBrush { get; set; }
         public float StrokeWidth { get; set; }
-        public float TooCloseRange { get; set; }
+        public float HitRange { get; set; }
+        public float CloseEnoughRange { get; set; }
         public bool ShowText { get; set; }
 
         private float hudWidth { get { return Hud.Window.Size.Width; } }
@@ -27,17 +28,20 @@ namespace Turbo.Plugins.RuneB
         {
             base.Load(hud);
             HitRange = 55;
-            TooCloseRange = 15;
+            CloseEnoughRange = 15;
             ShowText = true;
             StrokeWidth = 3;
             TextFont = Hud.Render.CreateFont("tahoma", 8, 120, 255, 255, 255, true, false, true);
             GreyBrush = Hud.Render.CreateBrush(100, 80, 80, 80, 0);
             RareBrush = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
             ChampionBrush = Hud.Render.CreateBrush(100, 0, 128, 255, 0);
+            BossBrush = Hud.Render.CreateBrush(100, 255, 208, 0, 0);
         }
 
-        public void PaintWorld(WorldLayer layer)
+        public void PaintTopInGame(ClipState clipState)
         {
+            if (clipState != ClipState.BeforeClip) return;
+
             var monsters = Hud.Game.AliveMonsters;
             float x, y;
             double mobDistance;
@@ -45,10 +49,10 @@ namespace Turbo.Plugins.RuneB
 
             foreach (var monster in monsters)
             {
-                if (monster.Rarity == ActorRarity.Champion || monster.Rarity == ActorRarity.Rare)
+                if (monster.Rarity == ActorRarity.Champion || monster.Rarity == ActorRarity.Rare || monster.Rarity == ActorRarity.Boss)
                 {
                     mobDistance = monster.NormalizedXyDistanceToMe;
-                    if (mobDistance < TooCloseRange) continue;
+                    if (mobDistance < CloseEnoughRange) continue;
 
                     x = monster.ScreenCoordinate.X;
                     y = monster.ScreenCoordinate.Y;
@@ -67,6 +71,8 @@ namespace Turbo.Plugins.RuneB
                     if (monster.Rarity == ActorRarity.Champion)
                         DrawLineToMonster(ChampionBrush, x, y, mobDistance);
 
+                    if (monster.Rarity == ActorRarity.Boss)
+                        DrawLineToMonster(BossBrush, x, y, mobDistance);
                 }
             }
         }
@@ -86,11 +92,11 @@ namespace Turbo.Plugins.RuneB
 
         public Point PointOnLine(float x1, float y1, float x2, float y2, float offset)
         {
-            float distance = (float)Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2)); //distance 
-            float ratio = offset / distance; //segment ratio
+            float distance = (float)Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));  
+            float ratio = offset / distance; 
 
-            float x3 = ratio * x2 + (1 - ratio) * x1; // find point that divides the segment
-            float y3 = ratio * y2 + (1 - ratio) * y1; // into the ratio (1-r):r
+            float x3 = ratio * x2 + (1 - ratio) * x1;
+            float y3 = ratio * y2 + (1 - ratio) * y1; 
             return new Point(x3, y3);
         }
 
