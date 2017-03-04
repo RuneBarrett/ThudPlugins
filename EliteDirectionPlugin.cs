@@ -52,8 +52,7 @@ namespace Turbo.Plugins.RuneB
                 float x = monster.ScreenCoordinate.X;
                 float y = monster.ScreenCoordinate.Y;
 
-                // TODO : replace this with a Dictionary
-                IBrush brush;               
+                IBrush brush;
                 switch (monster.Rarity)
                 {
                     case ActorRarity.Champion:
@@ -65,10 +64,6 @@ namespace Turbo.Plugins.RuneB
                     case ActorRarity.Boss:
                         brush = BossBrush;
                         break;
-                    //case ActorRarity.Normal:
-                    //case ActorRarity.RareMinion:
-                    //case ActorRarity.Hireling:
-                    //case ActorRarity.Unique:
                     default:
                         continue;
                 }
