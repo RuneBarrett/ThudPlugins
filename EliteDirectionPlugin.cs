@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Turbo.Plugins.Default;
+using System.Collections.Generic;
 
 namespace Turbo.Plugins.RuneB
 {
@@ -17,7 +18,6 @@ namespace Turbo.Plugins.RuneB
         public bool ShowText { get; set; }
 
         private IScreenCoordinate center { get { return Hud.Game.Me.ScreenCoordinate; } }
-
         public EliteDirectionPlugin()
         {
             Enabled = true;
@@ -41,62 +41,61 @@ namespace Turbo.Plugins.RuneB
         {
             if (clipState != ClipState.BeforeClip) return;
 
-            var monsters = Hud.Game.AliveMonsters.Where(monster => monster.Rarity == ActorRarity.Champion || monster.Rarity == ActorRarity.Rare || monster.Rarity == ActorRarity.Boss);
-            var textDistanceAway = 150;
+            IEnumerable<IMonster> monsters = Hud.Game.AliveMonsters.Where(monster => monster.Rarity == ActorRarity.Champion || monster.Rarity == ActorRarity.Rare || monster.Rarity == ActorRarity.Boss);
+            int textDistanceAway = 180;
 
-            foreach (var monster in monsters)
+            foreach (IMonster monster in monsters)
             {
-                var mobDistance = monster.NormalizedXyDistanceToMe;
+                double mobDistance = monster.NormalizedXyDistanceToMe;
                 if (mobDistance < CloseEnoughRange) continue;
 
-                var x = monster.ScreenCoordinate.X;
-                var y = monster.ScreenCoordinate.Y;
+                float x = monster.ScreenCoordinate.X;
+                float y = monster.ScreenCoordinate.Y;
 
-                var brush = GreyBrush;
-                if (mobDistance <= HitRange)
+                // TODO : replace this with a Dictionary
+                IBrush brush;               
+                switch (monster.Rarity)
                 {
-                    // TODO : replace this with a Dictionary
-                    switch (monster.Rarity)
-                    {
-                        case ActorRarity.Champion:
-                            brush = ChampionBrush;
-                            break;
-                        case ActorRarity.Rare:
-                            brush = RareBrush;
-                            break;
-                        case ActorRarity.Boss:
-                            brush = BossBrush;
-                            break;
-                        //case ActorRarity.Normal:
-                        //case ActorRarity.RareMinion:
-                        //case ActorRarity.Hireling:
-                        //case ActorRarity.Unique:
-                        default:
-                            continue;
-                    }
+                    case ActorRarity.Champion:
+                        brush = ChampionBrush;
+                        break;
+                    case ActorRarity.Rare:
+                        brush = RareBrush;
+                        break;
+                    case ActorRarity.Boss:
+                        brush = BossBrush;
+                        break;
+                    //case ActorRarity.Normal:
+                    //case ActorRarity.RareMinion:
+                    //case ActorRarity.Hireling:
+                    //case ActorRarity.Unique:
+                    default:
+                        continue;
                 }
 
-                brush.DrawLine(center.X, center.Y, x, y, StrokeWidth);
+                //Draw line to monster
+                IScreenCoordinate start = PointOnLine(center.X, center.Y, x, y, 60);
+                IScreenCoordinate end = PointOnLine(x, y, center.X, center.Y, 80);
+                if (mobDistance < HitRange && brush != null) { brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth); }
+                else GreyBrush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.5f);
 
-                if (!ShowText)
-                    continue;
-
-                var layout = TextFont.GetTextLayout(string.Format("{0:N0}", mobDistance));
-                var p = PointOnLine(center.X, center.Y, x, y, textDistanceAway);
-                TextFont.DrawText(layout, p.X, p.Y);
-
-                // trying to avoid label overlap
-                textDistanceAway += 30;
+                if (ShowText)
+                {// Draw text
+                    var layout = TextFont.GetTextLayout(string.Format("{0:N0}", mobDistance));
+                    IScreenCoordinate p = PointOnLine(center.X, center.Y, x, y, textDistanceAway);
+                    TextFont.DrawText(layout, p.X, p.Y);
+                    textDistanceAway += 30; // avoid text overlap
+                }
             }
         }
 
         public IScreenCoordinate PointOnLine(float x1, float y1, float x2, float y2, float offset)
         {
-            var distance = (float)Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
-            var ratio = offset / distance;
+            float distance = (float)Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
+            float ratio = offset / distance;
 
-            var x3 = ratio * x2 + (1 - ratio) * x1;
-            var y3 = ratio * y2 + (1 - ratio) * y1;
+            float x3 = ratio * x2 + (1 - ratio) * x1;
+            float y3 = ratio * y2 + (1 - ratio) * y1;
             return Hud.Window.CreateScreenCoordinate(x3, y3);
         }
     }
