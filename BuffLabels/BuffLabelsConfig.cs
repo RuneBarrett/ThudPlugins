@@ -28,9 +28,9 @@ namespace Turbo.Plugins.RuneB
 
                 //plugin.YPosIncrement = 0.01f; // Vertical distance between labels
                 //plugin.SmoothMovement = false; // if true, animate movement to new position. else, jump straight there.
-                plugin.SmoothSpeed = 0.1f; //Animation speed.
+                //plugin.SmoothSpeed = 0.1f; //Animation speed.
 
-                plugin.SizeModifier = 1.2f; // change size of labels and text.
+                //plugin.SizeModifier = 1.2f; // change size of labels and text.
                 //plugin.NumRows = 5; //The amount of rows allowed. (if 1, all labels will align horizontally. Set a number higher than the highest number of buffs to keep all in one column.)
                 
                 /*How to add buffs:
@@ -43,9 +43,9 @@ namespace Turbo.Plugins.RuneB
                 plugin.Labels.Add(new RuneB.Label("Flying Dragon", 246562, 1, Hud.Render.CreateBrush(100, 50, 200, 255, 0)));
 
                 //Wizard
-                plugin.Labels.Add(new RuneB.Label("Archon", 134872, 2, Hud.Render.CreateBrush(100, 0, 80, 215, 0))); 
-                plugin.Labels.Add(new RuneB.Label("Magic Weapon", 76108, 0, Hud.Render.CreateBrush(100, 0, 45, 130, 0))); 
-                plugin.Labels.Add(new RuneB.Label("Energy Armor", 86991, 0, Hud.Render.CreateBrush(100, 140, 1, 170, 0)));
+                //plugin.Labels.Add(new RuneB.Label("Archon", 134872, 2, Hud.Render.CreateBrush(100, 0, 80, 215, 0))); 
+                //plugin.Labels.Add(new RuneB.Label("Magic Weapon", 76108, 0, Hud.Render.CreateBrush(100, 0, 45, 130, 0))); 
+                //plugin.Labels.Add(new RuneB.Label("Energy Armor", 86991, 0, Hud.Render.CreateBrush(100, 140, 1, 170, 0)));
 
                 //Barb
                 plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));

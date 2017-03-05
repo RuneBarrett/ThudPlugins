@@ -1,0 +1,28 @@
+﻿using Turbo.Plugins.Default;
+
+namespace Turbo.Plugins.RuneB
+{
+
+    public class TemplateConfig : BasePlugin, ICustomizer
+    {
+
+        public TemplateConfig()
+        {
+            Enabled = true;
+        }
+
+        public override void Load(IController hud)
+        {
+            base.Load(hud);
+        }
+
+        public void Customize()
+        {
+            Hud.RunOnPlugin<RuneB.TemplateConfig>(plugin =>
+            {
+
+            });
+        }
+    }
+}
+
