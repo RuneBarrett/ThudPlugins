@@ -102,8 +102,6 @@ namespace Turbo.Plugins.RuneB
         {
             if (clipState != ClipState.BeforeClip) return;
 
-
-
             //Allow changing font size from a customize method by instatiating here instead of in Load
             if (TextFont == null)
             {

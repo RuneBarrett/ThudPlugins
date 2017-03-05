@@ -21,14 +21,14 @@ namespace Turbo.Plugins.RuneB
 
             Hud.RunOnPlugin<RuneB.EliteDirectionPlugin>(plugin =>
             {
-                //Add a new monster, brush
-                plugin.MonsterBrushes.Add(ActorRarity.Hireling, Hud.Render.CreateBrush(100, 200, 0, 150, 0));
+                //Add a new monster + brush
+                //plugin.MonsterBrushes.Add(ActorRarity.Normal, Hud.Render.CreateBrush(100, 200, 0, 150, 0));
 
                 //Edit existing monsters brush.
-                plugin.MonsterBrushes[ActorRarity.Rare] = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
+                //plugin.MonsterBrushes[ActorRarity.Rare] = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
 
                 //Remove monster
-                plugin.MonsterBrushes.Remove(ActorRarity.Unique);
+                //plugin.MonsterBrushes.Remove(ActorRarity.Unique);
 
                 plugin.HitRange = 55;
                 plugin.CloseEnoughRange = 15;
