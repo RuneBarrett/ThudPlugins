@@ -9,16 +9,14 @@ namespace Turbo.Plugins.RuneB
     {
         public IFont TextFont { get; set; }
         public IBrush GreyBrush { get; set; }
-        public IBrush RareBrush { get; set; }
-        public IBrush ChampionBrush { get; set; }
-        public IBrush BossBrush { get; set; }
-        public IBrush UniqueBrush { get; set; }
         public float StrokeWidth { get; set; }
         public float HitRange { get; set; }
         public float CloseEnoughRange { get; set; }
         public bool ShowText { get; set; }
+        public Dictionary<ActorRarity, IBrush> MonsterBrushes { get; set; }
 
         private IScreenCoordinate center { get { return Hud.Game.Me.ScreenCoordinate; } }
+
         public EliteDirectionPlugin()
         {
             Enabled = true;
@@ -33,56 +31,34 @@ namespace Turbo.Plugins.RuneB
             StrokeWidth = 3;
             TextFont = Hud.Render.CreateFont("tahoma", 8, 120, 255, 255, 255, true, false, true);
             GreyBrush = Hud.Render.CreateBrush(100, 80, 80, 80, 0);
-            RareBrush = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
-            ChampionBrush = Hud.Render.CreateBrush(100, 0, 128, 255, 0);
-            BossBrush = Hud.Render.CreateBrush(100, 255, 208, 0, 0);
-            UniqueBrush = Hud.Render.CreateBrush(100, 200, 0, 150, 0);
+            MonsterBrushes = new Dictionary<ActorRarity, IBrush>();
+            MonsterBrushes.Add(ActorRarity.Rare, Hud.Render.CreateBrush(100, 255, 128, 0, 0));
+            MonsterBrushes.Add(ActorRarity.Champion, Hud.Render.CreateBrush(100, 0, 128, 255, 0));
+            MonsterBrushes.Add(ActorRarity.Boss, Hud.Render.CreateBrush(100, 255, 208, 0, 0));
+            MonsterBrushes.Add(ActorRarity.Unique, Hud.Render.CreateBrush(100, 200, 0, 150, 0));
         }
 
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
 
-            IEnumerable<IMonster> monsters = Hud.Game.AliveMonsters.Where(monster => monster.Rarity == ActorRarity.Champion || monster.Rarity == ActorRarity.Rare || monster.Rarity == ActorRarity.Boss || monster.Rarity == ActorRarity.Unique);
+            var monsters = Hud.Game.AliveMonsters.Where(monster => MonsterBrushes.ContainsKey(monster.Rarity) && monster.NormalizedXyDistanceToMe > CloseEnoughRange);
             int textDistanceAway = 180;
 
             foreach (IMonster monster in monsters)
             {
-                double mobDistance = monster.NormalizedXyDistanceToMe;
-                if (mobDistance < CloseEnoughRange) continue;
-
                 float x = monster.ScreenCoordinate.X;
                 float y = monster.ScreenCoordinate.Y;
-
-                IBrush brush;
-                switch (monster.Rarity)
-                {
-                    case ActorRarity.Champion:
-                        brush = ChampionBrush;
-                        break;
-                    case ActorRarity.Rare:
-                        brush = RareBrush;
-                        break;
-                    case ActorRarity.Boss:
-                        brush = BossBrush;
-                        break;
-                    case ActorRarity.Unique:
-                        brush = UniqueBrush;
-                        break;
-
-                    default:
-                        continue;
-                }
 
                 //Draw line to monster
                 IScreenCoordinate start = PointOnLine(center.X, center.Y, x, y, 60);
                 IScreenCoordinate end = PointOnLine(x, y, center.X, center.Y, 80);
-                if (mobDistance < HitRange && brush != null) { brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth); }
-                else GreyBrush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.5f);
+                if (monster.NormalizedXyDistanceToMe < HitRange) { MonsterBrushes[monster.Rarity].DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth); }
+                else GreyBrush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.4f);
 
-                if (ShowText)
-                {// Draw text
-                    var layout = TextFont.GetTextLayout(string.Format("{0:N0}", mobDistance));
+                if (ShowText) //Draw text
+                {
+                    var layout = TextFont.GetTextLayout(string.Format("{0:N0}", monster.NormalizedXyDistanceToMe));
                     IScreenCoordinate p = PointOnLine(center.X, center.Y, x, y, textDistanceAway);
                     TextFont.DrawText(layout, p.X, p.Y);
                     textDistanceAway += 30; // avoid text overlap
@@ -92,6 +68,7 @@ namespace Turbo.Plugins.RuneB
 
         public IScreenCoordinate PointOnLine(float x1, float y1, float x2, float y2, float offset)
         {
+            //Returns a coordinate at offset distance away from x1,y1 towards x2,y2  
             float distance = (float)Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
             float ratio = offset / distance;
 
