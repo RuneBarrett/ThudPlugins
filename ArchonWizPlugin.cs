@@ -30,10 +30,6 @@ namespace Turbo.Plugins.RuneB
         public IBrush ColdBrush { get; set; }
         public IBrush GreyBrush { get; set; }
 
-        /*private IPlayerSkill ArchonSkill { get { return Hud.Game.Me.Powers.UsedSkills.FirstOrDefault(s => s.SnoPower.Sno == 134872); } }
-        private IPlayerSkill MagicWeaponSkill { get { return Hud.Game.Me.Powers.UsedSkills.FirstOrDefault(s => s.SnoPower.Sno == 76108); } }
-        private IPlayerSkill EnergyArmorSkill { get { return Hud.Game.Me.Powers.UsedSkills.FirstOrDefault(s => s.SnoPower.Sno == 86991); } }*/
-
         private IPlayerSkill archonSkill;
         private IPlayerSkill magicWeaponSkill;
         private IPlayerSkill energyArmorSkill;
