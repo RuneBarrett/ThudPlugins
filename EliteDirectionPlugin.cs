@@ -12,6 +12,7 @@ namespace Turbo.Plugins.RuneB
         public IBrush RareBrush { get; set; }
         public IBrush ChampionBrush { get; set; }
         public IBrush BossBrush { get; set; }
+        public IBrush UniqueBrush { get; set; }
         public float StrokeWidth { get; set; }
         public float HitRange { get; set; }
         public float CloseEnoughRange { get; set; }
@@ -35,13 +36,14 @@ namespace Turbo.Plugins.RuneB
             RareBrush = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
             ChampionBrush = Hud.Render.CreateBrush(100, 0, 128, 255, 0);
             BossBrush = Hud.Render.CreateBrush(100, 255, 208, 0, 0);
+            UniqueBrush = Hud.Render.CreateBrush(100, 200, 0, 150, 0);
         }
 
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
 
-            IEnumerable<IMonster> monsters = Hud.Game.AliveMonsters.Where(monster => monster.Rarity == ActorRarity.Champion || monster.Rarity == ActorRarity.Rare || monster.Rarity == ActorRarity.Boss);
+            IEnumerable<IMonster> monsters = Hud.Game.AliveMonsters.Where(monster => monster.Rarity == ActorRarity.Champion || monster.Rarity == ActorRarity.Rare || monster.Rarity == ActorRarity.Boss || monster.Rarity == ActorRarity.Unique);
             int textDistanceAway = 180;
 
             foreach (IMonster monster in monsters)
@@ -64,6 +66,10 @@ namespace Turbo.Plugins.RuneB
                     case ActorRarity.Boss:
                         brush = BossBrush;
                         break;
+                    case ActorRarity.Unique:
+                        brush = UniqueBrush;
+                        break;
+
                     default:
                         continue;
                 }
