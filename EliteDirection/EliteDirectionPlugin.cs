@@ -7,6 +7,7 @@ namespace Turbo.Plugins.RuneB
 {
     public class EliteDirectionPlugin : BasePlugin, IInGameTopPainter
     {
+        public int TextDistanceAway { get; set; }
         public IFont TextFont { get; set; }
         public IBrush GreyBrush { get; set; }
         public float StrokeWidth { get; set; }
@@ -36,29 +37,30 @@ namespace Turbo.Plugins.RuneB
             MonsterBrushes.Add(ActorRarity.Champion, Hud.Render.CreateBrush(100, 0, 128, 255, 0));
             MonsterBrushes.Add(ActorRarity.Boss, Hud.Render.CreateBrush(100, 255, 208, 0, 0));
             MonsterBrushes.Add(ActorRarity.Unique, Hud.Render.CreateBrush(100, 200, 0, 150, 0));
+            TextDistanceAway = 160;
         }
 
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
-            int textDistanceAway = 160;
+            var textDistanceAway = TextDistanceAway;
 
             var monsters = Hud.Game.AliveMonsters.Where(monster => MonsterBrushes.ContainsKey(monster.Rarity) && monster.NormalizedXyDistanceToMe > CloseEnoughRange);
-            foreach (IMonster monster in monsters)
+            foreach (var monster in monsters)
             {
-                float x = monster.ScreenCoordinate.X;
-                float y = monster.ScreenCoordinate.Y;
+                var monsterScreenCoordinate = monster.FloorCoordinate.ToScreenCoordinate();
 
                 //Draw line to monster
-                IScreenCoordinate start = PointOnLine(center.X, center.Y, x, y, 60);
-                IScreenCoordinate end = PointOnLine(x, y, center.X, center.Y, 80);
+                var start = PointOnLine(center.X, center.Y, monsterScreenCoordinate.X, monsterScreenCoordinate.Y, 60);
+                var end = PointOnLine(monsterScreenCoordinate.X, monsterScreenCoordinate.Y-30, center.X, center.Y, 20);
+
                 if (monster.NormalizedXyDistanceToMe < HitRange) { MonsterBrushes[monster.Rarity].DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth); }
                 else GreyBrush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.5f);
 
                 if (ShowText) //Draw text
                 {
                     var layout = TextFont.GetTextLayout(string.Format("{0:N0}", monster.NormalizedXyDistanceToMe));
-                    IScreenCoordinate p = PointOnLine(center.X, center.Y, x, y, textDistanceAway);
+                    var p = PointOnLine(center.X, center.Y, monsterScreenCoordinate.X, monsterScreenCoordinate.Y, textDistanceAway);
                     TextFont.DrawText(layout, p.X, p.Y);
                     textDistanceAway += 30; // avoid text overlap
                 }
@@ -67,12 +69,12 @@ namespace Turbo.Plugins.RuneB
 
         public IScreenCoordinate PointOnLine(float x1, float y1, float x2, float y2, float offset)
         {
-            //Returns a coordinate at offset distance away from x1,y1 towards x2,y2  
-            float distance = (float)Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
-            float ratio = offset / distance;
+            //Returns a coordinate at offset distance away from x1,y1 towards x2,y2
+            var distance = (float)Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
+            var ratio = offset / distance;
 
-            float x3 = ratio * x2 + (1 - ratio) * x1;
-            float y3 = ratio * y2 + (1 - ratio) * y1;
+            var x3 = ratio * x2 + (1 - ratio) * x1;
+            var y3 = ratio * y2 + (1 - ratio) * y1;
             return Hud.Window.CreateScreenCoordinate(x3, y3);
         }
     }
