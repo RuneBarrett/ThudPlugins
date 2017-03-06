@@ -48,12 +48,15 @@ namespace Turbo.Plugins.RuneB
                 //plugin.Labels.Add(new RuneB.Label("Energy Armor", 86991, 0, Hud.Render.CreateBrush(100, 140, 1, 170, 0)));
 
                 //Barb
-                plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));
+                //plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));
                 plugin.Labels.Add(new RuneB.Label("Berserker", 79607, 0, Hud.Render.CreateBrush(100, 45, 100, 55, 0))); //Wrath of the Beserker
 
                 //Crusader
                 plugin.Labels.Add(new RuneB.Label("Akarat's Champ", 269032, 1, Hud.Render.CreateBrush(100, 70, 50, 40, 0)));
                 plugin.Labels.Add(new RuneB.Label("Iron Skin", 291804, 0, Hud.Render.CreateBrush(100, 90, 60, 70, 0)));
+
+                //Witch Doctor
+                plugin.Labels.Add(new RuneB.Label("Arachyr", 30631, 5, Hud.Render.CreateBrush(100, 255, 66, 33, 0)));
             });
         }
     }
