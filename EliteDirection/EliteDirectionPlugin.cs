@@ -33,6 +33,7 @@ namespace Turbo.Plugins.RuneB
             CloseEnoughRange = 15;
             TextDistanceAway = 160;
             StrokeWidth = 3;
+            ShowMonsterLines = true;
 
             TextFont = Hud.Render.CreateFont("tahoma", 8, 120, 255, 255, 255, true, false, true);
             GreyBrush = Hud.Render.CreateBrush(100, 80, 80, 80, 0);
