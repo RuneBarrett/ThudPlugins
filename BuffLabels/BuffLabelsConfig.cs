@@ -31,7 +31,7 @@ namespace Turbo.Plugins.RuneB
                 //plugin.SmoothSpeed = 0.1f; //Animation speed.
 
                 //plugin.SizeModifier = 1.2f; // change size of labels and text.
-                //plugin.NumRows = 5; //The amount of rows allowed. (if 1, all labels will align horizontally. Set a number higher than the highest number of buffs to keep all in one column.)
+                plugin.NumRows = 5; //The amount of rows allowed. (if 1, all labels will align horizontally. Set a number higher than the highest number of buffs to keep all in one column.)
                 
                 /*How to add buffs:
                 plugin.Labels.Add(new RuneB.Label(<Shown buff name>, <Sno>, <Icon count>, <A brush>));
@@ -48,15 +48,15 @@ namespace Turbo.Plugins.RuneB
                 //plugin.Labels.Add(new RuneB.Label("Energy Armor", 86991, 0, Hud.Render.CreateBrush(100, 140, 1, 170, 0)));
 
                 //Barb
-                //plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));
-                plugin.Labels.Add(new RuneB.Label("Berserker", 79607, 0, Hud.Render.CreateBrush(100, 45, 100, 55, 0))); //Wrath of the Beserker
+                plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));
+                //plugin.Labels.Add(new RuneB.Label("Berserker", 79607, 0, Hud.Render.CreateBrush(100, 45, 100, 55, 0))); //Wrath of the Beserker
 
                 //Crusader
-                plugin.Labels.Add(new RuneB.Label("Akarat's Champ", 269032, 1, Hud.Render.CreateBrush(100, 70, 50, 40, 0)));
-                plugin.Labels.Add(new RuneB.Label("Iron Skin", 291804, 0, Hud.Render.CreateBrush(100, 90, 60, 70, 0)));
+                //plugin.Labels.Add(new RuneB.Label("Akarat's Champ", 269032, 1, Hud.Render.CreateBrush(100, 70, 50, 40, 0)));
+                //plugin.Labels.Add(new RuneB.Label("Iron Skin", 291804, 0, Hud.Render.CreateBrush(100, 90, 60, 70, 0)));
 
                 //Witch Doctor
-                plugin.Labels.Add(new RuneB.Label("Arachyr", 30631, 5, Hud.Render.CreateBrush(100, 255, 66, 33, 0)));
+                //plugin.Labels.Add(new RuneB.Label("Arachyr", 30631, 5, Hud.Render.CreateBrush(100, 255, 66, 33, 0)));
             });
         }
     }
