@@ -45,7 +45,7 @@ namespace Turbo.Plugins.RuneB
             MonsterBrushes.Add(ActorRarity.Unique, Hud.Render.CreateBrush(100, 200, 0, 150, 0));
 
             GizmoBrushes = new Dictionary<GizmoType, GizmoLine>();
-            GizmoBrushes.Add(GizmoType.PoolOfReflection, new GizmoLine(GizmoLine.AnimType.Blink, Hud.Render.CreateBrush(100, 250,255, 0, 0)));
+            GizmoBrushes.Add(GizmoType.PoolOfReflection, new GizmoLine(GizmoLine.AnimType.Blink, Hud.Render.CreateBrush(100, 250, 255, 0, 0)));
             GizmoBrushes.Add(GizmoType.HealingWell, new GizmoLine(GizmoLine.AnimType.Fade, Hud.Render.CreateBrush(100, 255, 0, 0, 0)));
 
         }
@@ -55,7 +55,8 @@ namespace Turbo.Plugins.RuneB
             if (clipState != ClipState.BeforeClip) return;
 
             //Monster lines
-            if (ShowMonsterLines) {
+            if (ShowMonsterLines)
+            {
                 var textDistanceAway = TextDistanceAway;
                 var monsters = Hud.Game.AliveMonsters.Where(monster => MonsterBrushes.ContainsKey(monster.Rarity) && monster.NormalizedXyDistanceToMe > CloseEnoughRange);
                 foreach (var monster in monsters)
@@ -81,12 +82,28 @@ namespace Turbo.Plugins.RuneB
 
             //Gizmo lines
             var Gizmos = Hud.Game.Actors.Where(actor => GizmoBrushes.ContainsKey(actor.GizmoType));
-            foreach (var gizmo in Gizmos) {
+            foreach (var gizmo in Gizmos)
+            {
                 var gizmoPos = gizmo.FloorCoordinate.ToScreenCoordinate();
                 var start = PointOnLine(center.X, center.Y, gizmoPos.X, gizmoPos.Y, 60);
                 var end = PointOnLine(gizmoPos.X, gizmoPos.Y - 30, center.X, center.Y, 20);
 
-                GizmoBrushes[gizmo.GizmoType].brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth*0.8f);
+                var gizmoLine = GizmoBrushes[gizmo.GizmoType];
+                switch (gizmoLine.anim)
+                {
+                    case GizmoLine.AnimType.Blink:
+                        gizmoLine.brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.8f);
+                        break;
+                    case GizmoLine.AnimType.Fade:
+                        break;
+                    case GizmoLine.AnimType.WidthMod:
+                        break;
+                }
+
+                if (gizmoLine.anim == GizmoLine.AnimType.Blink)
+                {
+
+                }
             }
         }
 
@@ -102,13 +119,15 @@ namespace Turbo.Plugins.RuneB
         }
     }
 
-    public class GizmoLine {
-        public enum AnimType {Blink, Fade, WidthMod}
+    public class GizmoLine
+    {
+        public enum AnimType { Blink, Fade, WidthMod }
         public AnimType anim;
         public IBrush brush;
         private AnimType blink;
 
-        public GizmoLine(AnimType anim, IBrush brush) {
+        public GizmoLine(AnimType anim, IBrush brush)
+        {
             this.anim = anim;
             this.brush = brush;
         }
