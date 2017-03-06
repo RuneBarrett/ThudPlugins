@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Turbo.Plugins.RuneB
 {
-    public class EliteDirectionPlugin : BasePlugin, IInGameTopPainter
+    public class LinesToThingsPlugin : BasePlugin, IInGameTopPainter
     {
         public int TextDistanceAway { get; set; }
         public IFont TextFont { get; set; }
@@ -20,7 +20,7 @@ namespace Turbo.Plugins.RuneB
 
         private IScreenCoordinate center { get { return Hud.Game.Me.ScreenCoordinate; } }
 
-        public EliteDirectionPlugin()
+        public LinesToThingsPlugin()
         {
             Enabled = true;
         }

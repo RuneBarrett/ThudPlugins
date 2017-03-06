@@ -3,10 +3,10 @@
 namespace Turbo.Plugins.RuneB
 {
 
-    public class EliteDirectionConfig : BasePlugin, ICustomizer
+    public class LinesToThingsConfig : BasePlugin, ICustomizer
     {
 
-        public EliteDirectionConfig()
+        public LinesToThingsConfig()
         {
             Enabled = true;
         }
@@ -19,7 +19,7 @@ namespace Turbo.Plugins.RuneB
         public void Customize()
         {
 
-            Hud.RunOnPlugin<RuneB.EliteDirectionPlugin>(plugin =>
+            Hud.RunOnPlugin<RuneB.LinesToThingsPlugin>(plugin =>
             {
                 //Add a new monster + brush
                 //plugin.MonsterBrushes.Add(ActorRarity.Normal, Hud.Render.CreateBrush(100, 200, 0, 150, 0));
