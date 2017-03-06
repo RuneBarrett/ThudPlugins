@@ -45,7 +45,7 @@ namespace Turbo.Plugins.RuneB
             if (clipState != ClipState.BeforeClip) return;
             var textDistanceAway = TextDistanceAway;
 
-            var monsters = Hud.Game.AliveMonsters.Where(monster => MonsterBrushes.ContainsKey(monster.Rarity) && monster.NormalizedXyDistanceToMe > CloseEnoughRange);
+            var monsters = Hud.Game.AliveMonsters.Where(monster => MonsterBrushes.ContainsKey(monster.Rarity) && monster.SummonerAcdDynamicId == 0 && monster.NormalizedXyDistanceToMe > CloseEnoughRange);
             foreach (var monster in monsters)
             {
                 var monsterScreenCoordinate = monster.FloorCoordinate.ToScreenCoordinate();
