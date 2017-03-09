@@ -33,7 +33,7 @@ namespace Turbo.Plugins.RuneB
         public List<Label> Labels { get; set; }
 
         private float _yPosTemp, _xPosTemp, _xPosGoal, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
-        private bool _jumped, _debugStarted, _debugDone, _debugAlreadyAdded;
+        private bool _jumped, _debugStarted, _debugDone, _debugAlreadyAdded, _started;
         private int _debugAddShifter = 0, _activeBuffsCount = 0;
 
         private float hudWidth { get { return Hud.Window.Size.Width; } }
@@ -89,19 +89,22 @@ namespace Turbo.Plugins.RuneB
 
             Labels = new List<Label>();
 
-            Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
-            Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
-
             _jumpCount = 1;
             _yPosTemp = YPos;
             _xPosTemp = XPos;
+            _xPosGoal = 0.5f;
             if (NumRows < 1) NumRows = 1;
         }
 
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
-
+            if (!_started)
+            {// Fix to make it possible to set oculus & sanc to false through customize. this is a bit overheady
+                _started = true;
+                Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
+                Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
+            }
             //Allow changing font size from a customize method by instatiating here instead of in Load
             if (TextFont == null)
             {
@@ -119,7 +122,7 @@ namespace Turbo.Plugins.RuneB
 
             //Smooth horizontal movement
             CalculateXPosTemp();
-            
+
             //Reset vars
             _yPosTemp = YPos;
             _jumped = false;
@@ -161,10 +164,12 @@ namespace Turbo.Plugins.RuneB
         private void CalculateXPosTemp()
         {
             var jump = _jumpCount;
+            //_xPosGoal = 0.5f;
             if (_activeBuffsCount % NumRows == 0)
             {
-                jump = (_activeBuffsCount-1) / NumRows;
+                jump = (_activeBuffsCount - 1) / NumRows;
                 _xPosGoal = (_jumpCount < 1) ? XPos : (float)(XPos - (_labelWidthPercentage * SizeModifier * ((_activeBuffsCount * .01f) + 1) * (jump)) / 2);
+                
             }
             if (SmoothMovement)
             {

@@ -20,8 +20,10 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.BuffLabelsPlugin>(plugin =>
             {
-                //plugin.Debug = true; // show all labels, and add them slowly over time to see animations.
+                //REMOVE OR ADD // IN FRONT OF LINES OF CODE TO ACTIVATE OR DEACTIVATE THEM
+                //plugin.Debug = true; // show all labels added over time to see the animations.
 
+                //--------------------- CHANGE LOOK EXAMPLES --------------------------- 
                 //POSITION, MARGIN, SIZE & ANIMATION
                 //plugin.YPos = 0.15f; //Vertical position (0 == top, 1 == bottom)
                 //plugin.XPos = 0.5f; //Horizontal position (0 == left, 1 == right)
@@ -31,14 +33,12 @@ namespace Turbo.Plugins.RuneB
                 //plugin.SmoothSpeed = 0.1f; //Animation speed.
 
                 //plugin.SizeModifier = 1.2f; // change size of labels and text.
-                plugin.NumRows = 5; //The amount of rows allowed. (if 1, all labels will align horizontally. Set a number higher than the highest number of buffs to keep all in one column.)
-                
-                /*How to add buffs:
-                plugin.Labels.Add(new RuneB.Label(<Shown buff name>, <Sno>, <Icon count>, <A brush>));
-                Find sno's in /doc/sno_powers.txt
-                */
+                plugin.NumRows = 4; //The amount of rows allowed. (if 1, all labels will align horizontally. Set a number higher than the highest number of buffs to keep all in one column.)
 
-                //EXAMPLES:
+                //--------------------- ADD BUFF EXAMPLES ---------------------------
+                //How to add buffs (Find sno's in /doc/sno_powers.txt): 
+                //    plugin.Labels.Add(new RuneB.Label(<Shown buff name>, <Sno>, <Icon count>, <A brush>));
+
                 //Monk:
                 plugin.Labels.Add(new RuneB.Label("Flying Dragon", 246562, 1, Hud.Render.CreateBrush(100, 50, 200, 255, 0)));
 
@@ -48,7 +48,7 @@ namespace Turbo.Plugins.RuneB
                 //plugin.Labels.Add(new RuneB.Label("Energy Armor", 86991, 0, Hud.Render.CreateBrush(100, 140, 1, 170, 0)));
 
                 //Barb
-                plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));
+                //plugin.Labels.Add(new RuneB.Label("War Cry", 375483, 0, Hud.Render.CreateBrush(100, 100, 50, 40, 0)));
                 //plugin.Labels.Add(new RuneB.Label("Berserker", 79607, 0, Hud.Render.CreateBrush(100, 45, 100, 55, 0))); //Wrath of the Beserker
 
                 //Crusader
@@ -57,6 +57,11 @@ namespace Turbo.Plugins.RuneB
 
                 //Witch Doctor
                 //plugin.Labels.Add(new RuneB.Label("Arachyr", 30631, 5, Hud.Render.CreateBrush(100, 255, 66, 33, 0)));
+
+                //--------------------- DISABLE DEFAULT BUFFS ---------------------------
+                //plugin.ShowIgnorePain = false;
+                //plugin.ShowInnerSanctuary = false;
+                //plugin.ShowOculus = false;
             });
         }
     }

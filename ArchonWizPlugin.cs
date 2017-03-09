@@ -12,6 +12,9 @@ namespace Turbo.Plugins.RuneB
         public bool ShowArchonCD { get; set; }
         public bool ShowArchonRemain { get; set; }
         public bool AlwaysShowElements { get; set; }
+        public float WarningYPos { get; set; }
+        public float WarningYPosIncr { get; set; }
+        public float ArchonCDandRemainYPos { get; set; }
 
         public GroundCircleDecorator ZeiRanceIndicator { get; set; }
         public TopLabelDecorator ArchonCDLabel { get; set; }
@@ -54,7 +57,7 @@ namespace Turbo.Plugins.RuneB
                 plugin.RuleCalculator.Rules.Add(new BuffRule(429855) { IconIndex = 5, MinimumIconCount = 1, ShowTimeLeft = true, ShowStacks = false, IconSizeMultiplier = 1.3f }); // Tal Rasha
             });
         }
-        
+
         public override void Load(IController hud)
         {
             base.Load(hud);
@@ -67,8 +70,11 @@ namespace Turbo.Plugins.RuneB
             ShowArchonCD = true;
             ShowArchonRemain = true;
             AlwaysShowElements = false;
+            WarningYPos = 0.27f;
+            WarningYPosIncr = 0.022f; // Distance between warnings
+            ArchonCDandRemainYPos = 0.5f; // Just below tal rasha icons = 0.605f;
 
-            WarningFont = Hud.Render.CreateFont("tahoma", 10f, 200, 255, 0, 0, false, false, true);
+            WarningFont = Hud.Render.CreateFont("tahoma", 13f, 200, 255, 0, 0, false, false, true);
             ArchonCDFont = Hud.Render.CreateFont("tahoma", 10f, 255, 140, 140, 180, false, false, true);
             ArchonRemainFont = Hud.Render.CreateFont("tahoma", 10f, 255, 80, 140, 210, false, false, true);
             ArchonRemainSoonFont = Hud.Render.CreateFont("tahoma", 14.5f, 255, 255, 0, 0, false, false, true);
@@ -96,6 +102,7 @@ namespace Turbo.Plugins.RuneB
             _lRashaSize = 24f;
             _lRashaYpos = 0.585f;
             _lRashaSizeMod = 0.9f;
+
         }
 
         public void PaintTopInGame(ClipState clipState)
@@ -121,7 +128,7 @@ namespace Turbo.Plugins.RuneB
 
                 //Draw Archon cooldown
                 if (archonSkill != null && ShowArchonCD)
-                    ArchonCooldownLabel.Paint(hudWidth * 0.5f - _lWidth / 2, hudHeight * 0.515f, _lWidth, _lHeight, HorizontalAlign.Center);
+                    ArchonCooldownLabel.Paint(hudWidth * 0.5f - _lWidth / 2, hudHeight * (ArchonCDandRemainYPos+0.015f), _lWidth, _lHeight, HorizontalAlign.Center);
 
                 //Draw Archon time remaining
                 if (archonSkill != null && ShowArchonRemain)
@@ -152,15 +159,16 @@ namespace Turbo.Plugins.RuneB
                 if (r > 3f)
                 {
                     var layout = ArchonRemainFont.GetTextLayout(string.Format("{0:N1}", r));
-                    ArchonRemainFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.515f);
+                    ArchonRemainFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (ArchonCDandRemainYPos + 0.015f));
                 }
-                else {
+                else
+                {
                     string str = string.Format("{0:N1}", r);
                     if (r <= 3 && r > 2) str = string.Format("\u231A {0:N1} \u231A", r);
                     if (r <= 2 && r > 1) str = string.Format("\u231B {0:N1} \u231B", r);
                     if (r <= 1) str = string.Format("\u25B6 {0:N1} \u25C0", r);
                     var layout = ArchonRemainSoonFont.GetTextLayout(str);
-                    ArchonRemainSoonFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.505f);
+                    ArchonRemainSoonFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (ArchonCDandRemainYPos + 0.005f));
                 }
             }
             else _timerRunning = false;
@@ -195,23 +203,24 @@ namespace Turbo.Plugins.RuneB
             {
                 if (!me.Powers.BuffIsActive(135663, 0)) //Slow Time
                 {
-                    var layout = WarningFont.GetTextLayout("\u22EF Bubble Up \u22EF");
-                    WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.47f);
+                    var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + me.Powers.GetBuff(135663).SnoPower.NameLocalized + " \u2996\u22EF"); // UsedWizardPowers returns "Archon" instead of "Slow Time" so i user GetBuff() instead 
+                    WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * WarningYPos);
                 }
-            }else
+            }
+            else
             {//NOT IN ARCHON
                 if (magicWeaponSkill != null)
                 {
-                    var layout = WarningFont.GetTextLayout("\u22EF Missing Magic Weapon \u22EF");
+                    var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + me.Powers.UsedWizardPowers.MagicWeapon.SnoPower.NameLocalized + " \u2996\u22EF");
                     if (!me.Powers.BuffIsActive(76108, 0))
-                        WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.47f);
+                        WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * WarningYPos);
                 }
 
                 if (energyArmorSkill != null)
                 {
-                    var layout = WarningFont.GetTextLayout("\u22EF Missing Energy Armor \u22EF");
+                    var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + me.Powers.UsedWizardPowers.EnergyArmor.SnoPower.NameLocalized + " \u2996\u22EF");
                     if (!me.Powers.BuffIsActive(86991, 0))
-                        WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.485f);
+                        WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (WarningYPos+WarningYPosIncr));
                 }
             }
         }
