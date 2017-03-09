@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Turbo.Plugins.RuneB
 {
-    public class LinesToThingsPlugin : BasePlugin, IInGameTopPainter
+    public class DirectionLinesPlugin : BasePlugin, IInGameTopPainter
     {
         public int TextDistanceAway { get; set; }
         public IFont TextFont { get; set; }
@@ -20,7 +20,7 @@ namespace Turbo.Plugins.RuneB
 
         private IScreenCoordinate center { get { return Hud.Game.Me.ScreenCoordinate; } }
 
-        public LinesToThingsPlugin()
+        public DirectionLinesPlugin()
         {
             Enabled = true;
         }
@@ -46,7 +46,8 @@ namespace Turbo.Plugins.RuneB
 
             GizmoBrushes = new Dictionary<GizmoType, GizmoLine>();
             GizmoBrushes.Add(GizmoType.PoolOfReflection, new GizmoLine(GizmoLine.AnimType.Blink, Hud.Render.CreateBrush(100, 250, 255, 0, 0)));
-            GizmoBrushes.Add(GizmoType.HealingWell, new GizmoLine(GizmoLine.AnimType.Fade, Hud.Render.CreateBrush(100, 255, 0, 0, 0)));
+            //GizmoBrushes.Add(GizmoType.HealingWell, new GizmoLine(GizmoLine.AnimType.Fade, Hud.Render.CreateBrush(100, 255, 0, 0, 0)));
+            GizmoBrushes.Add(GizmoType.Banner, new GizmoLine(GizmoLine.AnimType.Blink, Hud.Render.CreateBrush(100, 0, 255, 0, 0)));//for testing
 
         }
 
@@ -91,18 +92,18 @@ namespace Turbo.Plugins.RuneB
                 var gizmoLine = GizmoBrushes[gizmo.GizmoType];
                 switch (gizmoLine.anim)
                 {
-                    case GizmoLine.AnimType.Blink:
+                    case GizmoLine.AnimType.None:
                         gizmoLine.brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.8f);
+                        break;
+                    case GizmoLine.AnimType.Blink:
+                        //TextFont.DrawText(""+(Hud.Game.CurrentRealTimeMilliseconds/1000) % 2, end);
+                        if ((Hud.Game.CurrentRealTimeMilliseconds / 700) % 2 == 0)
+                            gizmoLine.brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.8f);
                         break;
                     case GizmoLine.AnimType.Fade:
                         break;
                     case GizmoLine.AnimType.WidthMod:
                         break;
-                }
-
-                if (gizmoLine.anim == GizmoLine.AnimType.Blink)
-                {
-
                 }
             }
         }
@@ -121,7 +122,7 @@ namespace Turbo.Plugins.RuneB
 
     public class GizmoLine
     {
-        public enum AnimType { Blink, Fade, WidthMod }
+        public enum AnimType { Blink, Fade, WidthMod, None }
         public AnimType anim;
         public IBrush brush;
         private AnimType blink;

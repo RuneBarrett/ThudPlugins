@@ -68,7 +68,7 @@ namespace Turbo.Plugins.RuneB
             ShowArchonRemain = true;
             AlwaysShowElements = false;
 
-            WarningFont = Hud.Render.CreateFont("tahoma", 10f, 200, 255, 0, 0, false, false, true);
+            WarningFont = Hud.Render.CreateFont("tahoma", 12f, 200, 255, 0, 0, false, false, true);
             ArchonCDFont = Hud.Render.CreateFont("tahoma", 10f, 255, 140, 140, 180, false, false, true);
             ArchonRemainFont = Hud.Render.CreateFont("tahoma", 10f, 255, 80, 140, 210, false, false, true);
             ArchonRemainSoonFont = Hud.Render.CreateFont("tahoma", 14.5f, 255, 255, 0, 0, false, false, true);
@@ -195,21 +195,21 @@ namespace Turbo.Plugins.RuneB
             {
                 if (!me.Powers.BuffIsActive(135663, 0)) //Slow Time
                 {
-                    var layout = WarningFont.GetTextLayout("\u22EF Bubble Up \u22EF");
+                    var layout = WarningFont.GetTextLayout("\u22EF "+me.Powers.UsedWizardPowers.ArchonSlowTime.SnoPower.NameLocalized + " \u22EF");
                     WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.47f);
                 }
             }else
             {//NOT IN ARCHON
                 if (magicWeaponSkill != null)
                 {
-                    var layout = WarningFont.GetTextLayout("\u22EF Missing Magic Weapon \u22EF");
+                    var layout = WarningFont.GetTextLayout("\u22EF Missing "+ me.Powers.UsedWizardPowers.MagicWeapon.SnoPower.NameLocalized+ " \u22EF");
                     if (!me.Powers.BuffIsActive(76108, 0))
                         WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.47f);
                 }
 
                 if (energyArmorSkill != null)
                 {
-                    var layout = WarningFont.GetTextLayout("\u22EF Missing Energy Armor \u22EF");
+                    var layout = WarningFont.GetTextLayout("\u22EF Missing "+ me.Powers.UsedWizardPowers.EnergyArmor.SnoPower.NameLocalized + " \u22EF");
                     if (!me.Powers.BuffIsActive(86991, 0))
                         WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * 0.485f);
                 }

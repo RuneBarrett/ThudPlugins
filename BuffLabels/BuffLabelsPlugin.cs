@@ -33,7 +33,7 @@ namespace Turbo.Plugins.RuneB
         public List<Label> Labels { get; set; }
 
         private float _yPosTemp, _xPosTemp, _xPosGoal, _labelWidthPercentage, _labelHeightPercentage, _jumpCount;
-        private bool _jumped, _debugStarted, _debugDone, _debugAlreadyAdded;
+        private bool _jumped, _debugStarted, _debugDone, _debugAlreadyAdded, _started;
         private int _debugAddShifter = 0, _activeBuffsCount = 0;
 
         private float hudWidth { get { return Hud.Window.Size.Width; } }
@@ -89,9 +89,6 @@ namespace Turbo.Plugins.RuneB
 
             Labels = new List<Label>();
 
-            Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
-            Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
-
             _jumpCount = 1;
             _yPosTemp = YPos;
             _xPosTemp = XPos;
@@ -101,7 +98,11 @@ namespace Turbo.Plugins.RuneB
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
-
+            if (!_started) {// make it possible to set oculus & sanc to false through customize
+                _started = true;
+                Labels.Add(new Label("Oculus", 402461, 2, BackgroundBrushOC, ShowOculus));
+                Labels.Add(new Label("Inner Sanctuary", 317076, 1, BackgroundBrushIS, ShowInnerSanctuary));
+            }
             //Allow changing font size from a customize method by instatiating here instead of in Load
             if (TextFont == null)
             {
