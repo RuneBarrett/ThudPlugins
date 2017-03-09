@@ -23,11 +23,10 @@ namespace Turbo.Plugins.RuneB
 
         private IScreenCoordinate center { get { return Hud.Game.Me.ScreenCoordinate; } }
 
-
-
-        private float _opacityMod = 0.01f;
+        private float _opacityMod = 0.02f;
         private float _opacity = 0.01f;
-        private float _lineWidthMod = 0.01f;
+
+        private float _lineWidthMod = 0.03f;
         private float _lineWidth = 0.01f;
         private bool _started;
 
@@ -39,14 +38,14 @@ namespace Turbo.Plugins.RuneB
         public override void Load(IController hud)
         {
             base.Load(hud);
-            Debug = true;
             ShowGizmos = true;
             ShowText = true;
+            ShowMonsterLines = true;
             HitRange = 55;
             CloseEnoughRange = 15;
             TextDistanceAway = 160;
             StrokeWidth = 3;
-            ShowMonsterLines = true;
+
 
             TextFont = Hud.Render.CreateFont("tahoma", 8, 120, 255, 255, 255, true, false, true);
             GreyBrush = Hud.Render.CreateBrush(100, 80, 80, 80, 0);
