@@ -3,10 +3,8 @@ using System.Linq;
 
 namespace Turbo.Plugins.RuneB
 {
-
     public class BaseCustomizationPlugin : BasePlugin, ICustomizer
     {
-
         public BaseCustomizationPlugin()
         {
             Enabled = true;
@@ -19,7 +17,6 @@ namespace Turbo.Plugins.RuneB
 
         public void Customize()
         {
-
             Hud.RunOnPlugin<RuneB.ArchonWizPlugin>(plugin =>
             {
                 plugin.ShowWarnings = true;
@@ -39,9 +36,7 @@ namespace Turbo.Plugins.RuneB
 
             Hud.GetPlugin<InventoryAndStashPlugin>().NotGoodDisplayEnabled = false;
             Hud.GetPlugin<Jack.MouseLocatorPlugin>().Enabled = false;
-
+            //Hud.GetPlugin<Jack.Players.PlayerInspectPlugin>().Enabled = false;           
         }
-
     }
-
 }
