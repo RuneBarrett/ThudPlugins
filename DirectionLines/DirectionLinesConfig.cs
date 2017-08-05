@@ -31,7 +31,7 @@ namespace Turbo.Plugins.RuneB
                 plugin.HitRange = 55;
                 plugin.CloseEnoughRange = 15;
                 plugin.MonsterDistanceTextEnabled = true;
-                plugin.StrokeWidth = 3;
+                plugin.StrokeWidth = 6;
 
                 //--------------- ADD NEW MONSTER TYPE ------------------
                 plugin.MonsterBrushes.Add(ActorRarity.Unique, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 200, 0, 150, 0)));

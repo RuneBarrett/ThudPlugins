@@ -63,20 +63,20 @@ namespace Turbo.Plugins.RuneB
             base.Load(hud);
 
             // Public vars
-            //ShowWarnings = false;
+            ShowWarnings = true;
             ShowInTown = true;
             ShowZeiCircle = true;
             ShowRashaElements = true;
             ShowArchonCD = true;
             ShowArchonRemain = true;
             AlwaysShowElements = false;
-            //WarningYPos = 0.27f;
-            //WarningYPosIncr = 0.022f; // Distance between warnings
+            WarningYPos = 0.27f;
+            WarningYPosIncr = 0.022f; // Distance between warnings
             ArchonCDandRemainYPos = 0.5f; // Just below tal rasha icons = 0.605f;
 
-            //WarningFont = Hud.Render.CreateFont("tahoma", 13f, 200, 255, 0, 0, false, false, true);
-            ArchonCDFont = Hud.Render.CreateFont("tahoma", 10f, 255, 140, 140, 180, false, false, true);
-            ArchonRemainFont = Hud.Render.CreateFont("tahoma", 10f, 255, 80, 140, 210, false, false, true);
+            WarningFont = Hud.Render.CreateFont("tahoma", 13f, 200, 255, 0, 0, false, false, true);
+            ArchonCDFont = Hud.Render.CreateFont("tahoma", 12f, 255, 140, 140, 180, false, false, true);
+            ArchonRemainFont = Hud.Render.CreateFont("tahoma", 12f, 255, 80, 140, 210, false, false, true);
             ArchonRemainSoonFont = Hud.Render.CreateFont("tahoma", 14.5f, 255, 255, 0, 0, false, false, true);
 
             RashaBackgroundBrush = Hud.Render.CreateBrush(100, 30, 30, 30, 0);
@@ -87,7 +87,7 @@ namespace Turbo.Plugins.RuneB
             ColdBrush = Hud.Render.CreateBrush(255, 80, 130, 180, 0);
             ZeiRanceIndicator = new GroundCircleDecorator(Hud)
             {
-                Brush = Hud.Render.CreateBrush(50, 14, 200, 245, 2.5f),
+                Brush = Hud.Render.CreateBrush(50, 165, 223, 255, 4.5f),
                 Radius = 50f
             };
             ArchonCooldownLabel = new TopLabelDecorator(Hud)
@@ -120,8 +120,8 @@ namespace Turbo.Plugins.RuneB
 
                
                 //Draw missing buff warnings 
-                //if (ShowWarnings && !me.IsDead)
-                    //DrawWarnings(me);
+                if (ShowWarnings && !me.IsDead)
+                    DrawWarnings(me);
 
                 //Draw indicators for each tal rasha element
                 if ((me.Powers.BuffIsActive(429855, 5) || AlwaysShowElements) && ShowRashaElements)
@@ -197,8 +197,8 @@ namespace Turbo.Plugins.RuneB
             GreyBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + xPos, hudHeight * _lRashaYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
         }
 
-        //(DEPRECATED - use jack's awesome *AlertList Plugin)
-        /*private void DrawWarnings(IPlayer me) 
+        //(DEPRECATED - use jack's *AlertList Plugin)
+        private void DrawWarnings(IPlayer me) 
         {
             if (!ShowWarnings) return;
             //IN ARCHON 
@@ -206,7 +206,7 @@ namespace Turbo.Plugins.RuneB
             {
                 if (!me.Powers.BuffIsActive(135663, 0)) //Slow Time
                 {
-                    var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + me.Powers.GetBuff(135663).SnoPower.NameLocalized + " \u2996\u22EF"); // UsedWizardPowers returns "Archon" instead of "Slow Time" so i user GetBuff() instead 
+                    var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + /*me.Powers.GetBuff(135663).SnoPower.NameLocalized*/"Bubble Up" + " \u2996\u22EF"); // UsedWizardPowers returns "Archon" instead of "Slow Time" so i used GetBuff() instead 
                     WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * WarningYPos);
                 }
             }
@@ -222,19 +222,19 @@ namespace Turbo.Plugins.RuneB
                 if (energyArmorSkill != null)
                 {
                     var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + me.Powers.UsedWizardPowers.EnergyArmor.SnoPower.NameLocalized + " \u2996\u22EF");
-                    if (!me.Powers.BuffIsActive(86991, 0)) 
+                    if (!me.Powers.BuffIsActive(86991, 1)) 
                         WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (WarningYPos+WarningYPosIncr));
                 }
             }
-        }*/
+        }
 
         private void UpdateSkills(IPlayer me)
         {
             me.Powers.UsedSkills.ForEach(skill =>
             {
                 if (skill.SnoPower.Sno == 134872) archonSkill = skill;
-                //if (skill.SnoPower.Sno == 76108) magicWeaponSkill = skill;
-                //if (skill.SnoPower.Sno == 86991) energyArmorSkill = skill;
+                if (skill.SnoPower.Sno == 76108) magicWeaponSkill = skill;
+                if (skill.SnoPower.Sno == 86991) energyArmorSkill = skill;
             });
         }
     }

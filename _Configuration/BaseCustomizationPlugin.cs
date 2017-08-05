@@ -19,7 +19,6 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.ArchonWizPlugin>(plugin =>
             {
-                plugin.ShowWarnings = true;
                 plugin.ShowInTown = true;
                 plugin.ShowRashaElements = true;
                 plugin.ShowZeiCircle = true;
@@ -29,8 +28,8 @@ namespace Turbo.Plugins.RuneB
 
             Hud.RunOnPlugin<Jack.Alerts.PlayerTopAlertListPlugin>(plugin =>
             {
-                //var alerts = plugin.AlertList.Alerts.Where(a => a.TextSnoId == 76108/*MagicWeapon*/ || a.TextSnoId == 135663/*SlowTime*/ || a.TextSnoId == 86991/*EnergyArmor*/);
-                //foreach (var a in alerts) a.Enabled = false;                                
+                var alerts = plugin.AlertList.Alerts.Where(a => a.TextSnoId == 76108/*MagicWeapon*/ || a.TextSnoId == 135663/*SlowTime*/ || a.TextSnoId == 86991/*EnergyArmor*/);
+                foreach (var a in alerts) a.Enabled = false;                                
             });
 
 
