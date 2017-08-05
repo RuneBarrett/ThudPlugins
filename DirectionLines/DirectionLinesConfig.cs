@@ -21,7 +21,7 @@ namespace Turbo.Plugins.RuneB
 
             Hud.RunOnPlugin<RuneB.DirectionLinesPlugin>(plugin =>
             {
-                //plugin.Debug = true; // Shows lines with animations. Go to new tristram.
+                //plugin.Debug = true; // Shows lines with animations. Go to new tristram for example.
 
                 //--------------- GENERAL SETTINGS ------------------
                 plugin.MonsterLinesEnabled = true;

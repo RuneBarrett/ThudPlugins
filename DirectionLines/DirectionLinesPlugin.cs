@@ -53,7 +53,7 @@ namespace Turbo.Plugins.RuneB
 
             MonsterBrushes = new Dictionary<ActorRarity, Line>();
             MonsterBrushes.Add(ActorRarity.Rare, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 255, 128, 0, 0)));
-            MonsterBrushes.Add(ActorRarity.Champion, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 0, 128, 255, 0)));
+            MonsterBrushes.Add(ActorRarity.Champion, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 0, 128, 255, 0)));
             MonsterBrushes.Add(ActorRarity.Boss, new Line(Line.AnimType.None, Hud.Render.CreateBrush(100, 255, 208, 0, 0)));
 
             GizmoBrushes = new Dictionary<GizmoType, Line>();

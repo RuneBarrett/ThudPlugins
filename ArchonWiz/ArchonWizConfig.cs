@@ -20,7 +20,7 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.ArchonWizPlugin>(plugin =>
             {
-                plugin.ShowWarnings = true;
+                //plugin.ShowWarnings = false; // Better use use jack's alertlistplugin
                 plugin.ShowInTown = true;
                 plugin.ShowZeiCircle = true;
                 plugin.ShowRashaElements = true;

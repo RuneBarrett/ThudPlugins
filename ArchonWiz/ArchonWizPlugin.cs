@@ -63,18 +63,18 @@ namespace Turbo.Plugins.RuneB
             base.Load(hud);
 
             // Public vars
-            ShowWarnings = true;
+            //ShowWarnings = false;
             ShowInTown = true;
             ShowZeiCircle = true;
             ShowRashaElements = true;
             ShowArchonCD = true;
             ShowArchonRemain = true;
             AlwaysShowElements = false;
-            WarningYPos = 0.27f;
-            WarningYPosIncr = 0.022f; // Distance between warnings
+            //WarningYPos = 0.27f;
+            //WarningYPosIncr = 0.022f; // Distance between warnings
             ArchonCDandRemainYPos = 0.5f; // Just below tal rasha icons = 0.605f;
 
-            WarningFont = Hud.Render.CreateFont("tahoma", 13f, 200, 255, 0, 0, false, false, true);
+            //WarningFont = Hud.Render.CreateFont("tahoma", 13f, 200, 255, 0, 0, false, false, true);
             ArchonCDFont = Hud.Render.CreateFont("tahoma", 10f, 255, 140, 140, 180, false, false, true);
             ArchonRemainFont = Hud.Render.CreateFont("tahoma", 10f, 255, 80, 140, 210, false, false, true);
             ArchonRemainSoonFont = Hud.Render.CreateFont("tahoma", 14.5f, 255, 255, 0, 0, false, false, true);
@@ -87,7 +87,7 @@ namespace Turbo.Plugins.RuneB
             ColdBrush = Hud.Render.CreateBrush(255, 80, 130, 180, 0);
             ZeiRanceIndicator = new GroundCircleDecorator(Hud)
             {
-                Brush = Hud.Render.CreateBrush(50, 14, 200, 245, 1.5f),
+                Brush = Hud.Render.CreateBrush(50, 14, 200, 245, 2.5f),
                 Radius = 50f
             };
             ArchonCooldownLabel = new TopLabelDecorator(Hud)
@@ -118,9 +118,10 @@ namespace Turbo.Plugins.RuneB
                 if (me.Powers.BuffIsActive(392891, 4) && ShowZeiCircle)
                     ZeiRanceIndicator.Paint(me, me.FloorCoordinate, null);
 
-                //Draw missing buff warnings
-                if (ShowWarnings && !me.IsDead)
-                    DrawWarnings(me);
+               
+                //Draw missing buff warnings 
+                //if (ShowWarnings && !me.IsDead)
+                    //DrawWarnings(me);
 
                 //Draw indicators for each tal rasha element
                 if ((me.Powers.BuffIsActive(429855, 5) || AlwaysShowElements) && ShowRashaElements)
@@ -196,9 +197,11 @@ namespace Turbo.Plugins.RuneB
             GreyBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + xPos, hudHeight * _lRashaYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
         }
 
-        private void DrawWarnings(IPlayer me)
+        //(DEPRECATED - use jack's awesome *AlertList Plugin)
+        /*private void DrawWarnings(IPlayer me) 
         {
-            //IN ARCHON
+            if (!ShowWarnings) return;
+            //IN ARCHON 
             if (me.Powers.BuffIsActive(134872, 2)) //Archon
             {
                 if (!me.Powers.BuffIsActive(135663, 0)) //Slow Time
@@ -219,19 +222,19 @@ namespace Turbo.Plugins.RuneB
                 if (energyArmorSkill != null)
                 {
                     var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + me.Powers.UsedWizardPowers.EnergyArmor.SnoPower.NameLocalized + " \u2996\u22EF");
-                    if (!me.Powers.BuffIsActive(86991, 0))
+                    if (!me.Powers.BuffIsActive(86991, 0)) 
                         WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (WarningYPos+WarningYPosIncr));
                 }
             }
-        }
+        }*/
 
         private void UpdateSkills(IPlayer me)
         {
             me.Powers.UsedSkills.ForEach(skill =>
             {
                 if (skill.SnoPower.Sno == 134872) archonSkill = skill;
-                if (skill.SnoPower.Sno == 76108) magicWeaponSkill = skill;
-                if (skill.SnoPower.Sno == 86991) energyArmorSkill = skill;
+                //if (skill.SnoPower.Sno == 76108) magicWeaponSkill = skill;
+                //if (skill.SnoPower.Sno == 86991) energyArmorSkill = skill;
             });
         }
     }
