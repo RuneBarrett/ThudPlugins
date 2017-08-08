@@ -20,14 +20,14 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.ArchonWizPlugin>(plugin =>
             {
-                //plugin.ShowWarnings = false; // Better use use jack's alertlistplugin
+                plugin.ShowWarnings = true; // Disable if using jack's alertlistplugin
+                plugin.WarningYPos = 0.27f;
                 plugin.ShowInTown = true;
                 plugin.ShowZeiCircle = true;
                 plugin.ShowRashaElements = true;
                 plugin.ShowArchonCD = true;
                 plugin.ShowArchonRemain = true;
-                plugin.AlwaysShowElements = false;
-                plugin.WarningYPos = 0.27f;
+                plugin.AlwaysShowElements = false; 
                 plugin.ArchonCDandRemainYPos = 0.5f; // Just below tal rasha icons = 0.605f;
                 plugin.WarningYPosIncr = 0.022f; // Distance between warnings
 

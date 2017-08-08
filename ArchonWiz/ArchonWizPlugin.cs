@@ -117,8 +117,7 @@ namespace Turbo.Plugins.RuneB
                 //If Disentegration Wave is channelled, draw zei circle
                 if (me.Powers.BuffIsActive(392891, 4) && ShowZeiCircle)
                     ZeiRanceIndicator.Paint(me, me.FloorCoordinate, null);
-
-               
+             
                 //Draw missing buff warnings 
                 if (ShowWarnings && !me.IsDead)
                     DrawWarnings(me);
@@ -230,8 +229,12 @@ namespace Turbo.Plugins.RuneB
 
         private void UpdateSkills(IPlayer me)
         {
+            archonSkill = null;
+            magicWeaponSkill = null;
+            energyArmorSkill = null;
             me.Powers.UsedSkills.ForEach(skill =>
             {
+                
                 if (skill.SnoPower.Sno == 134872) archonSkill = skill;
                 if (skill.SnoPower.Sno == 76108) magicWeaponSkill = skill;
                 if (skill.SnoPower.Sno == 86991) energyArmorSkill = skill;
