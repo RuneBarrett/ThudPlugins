@@ -37,9 +37,9 @@ namespace Turbo.Plugins.RuneB
                 plugin.MonsterBrushes.Add(ActorRarity.Unique, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 200, 0, 150, 0)));
 
                 //--------------- ADD NEW GIZMO TYPE ------------------
-                plugin.GizmoBrushes.Add(GizmoType.PoolOfReflection, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 250, 255, 0, 0)));
-                //plugin.GizmoBrushes.Add(GizmoType.Chest, new Line(Line.AnimType.Blink, Hud.Render.CreateBrush(100, 250, 250, 250, 0)));
-                //plugin.GizmoBrushes.Add(GizmoType.HealingWell, new Line(Line.AnimType.Blink, Hud.Render.CreateBrush(100, 250, 0, 0, 0)));
+                plugin.GizmoBrushes.Add(GizmoType.PoolOfReflection, new Line(Line.AnimType.Blink, Hud.Render.CreateBrush(20, 250, 255, 0, 0)));
+                //plugin.GizmoBrushes.Add(GizmoType.Chest, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 250, 250, 250, 0)));
+                //plugin.GizmoBrushes.Add(GizmoType.HealingWell, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 250, 0, 0, 0)));
 
                 //--------------- EDIT MONSTER/GIZMO BRUSH OR ANIMATION ------------------
                 plugin.MonsterBrushes[ActorRarity.Rare].brush = Hud.Render.CreateBrush(100, 255, 128, 0, 0);

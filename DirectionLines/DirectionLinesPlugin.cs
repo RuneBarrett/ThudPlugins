@@ -62,13 +62,9 @@ namespace Turbo.Plugins.RuneB
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
-            if (Debug && !_started)
-            {
-                _started = true;
-                GizmoBrushes.Add(GizmoType.Portal, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 250, 255, 0, 0)));
-                GizmoBrushes.Add(GizmoType.IdentifyAll, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 0, 0, 255, 0)));
-                GizmoBrushes.Add(GizmoType.SharedStash, new Line(Line.AnimType.Blink, Hud.Render.CreateBrush(100, 0, 255, 0, 0)));
-            }
+            if (Debug && !_started)             
+                DebugAnimations();
+            
             if (AnimationsEnabled)
                 AnimationUpdate();
 
@@ -104,6 +100,14 @@ namespace Turbo.Plugins.RuneB
                     DrawLine(gizmoPos, gizmoLine, false);
                 }
             }
+        }
+
+        private void DebugAnimations()
+        {
+            _started = true;
+            GizmoBrushes.Add(GizmoType.Portal, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 250, 255, 0, 0)));
+            GizmoBrushes.Add(GizmoType.IdentifyAll, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 0, 0, 255, 0)));
+            GizmoBrushes.Add(GizmoType.SharedStash, new Line(Line.AnimType.Blink, Hud.Render.CreateBrush(100, 0, 255, 0, 0)));
         }
 
         private void AnimationUpdate()
