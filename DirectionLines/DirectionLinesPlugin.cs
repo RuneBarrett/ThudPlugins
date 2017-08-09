@@ -95,6 +95,7 @@ namespace Turbo.Plugins.RuneB
                 var Gizmos = Hud.Game.Actors.Where(actor => GizmoBrushes.ContainsKey(actor.GizmoType));
                 foreach (var gizmo in Gizmos)
                 {
+                    if (gizmo.IsOperated) continue;
                     var gizmoPos = gizmo.FloorCoordinate.ToScreenCoordinate();
                     var gizmoLine = GizmoBrushes[gizmo.GizmoType];
                     DrawLine(gizmoPos, gizmoLine, false);
