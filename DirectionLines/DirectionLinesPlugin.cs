@@ -72,7 +72,7 @@ namespace Turbo.Plugins.RuneB
             if (MonsterLinesEnabled)
             {
                 var textDistanceAway = TextDistanceAway;
-                var monsters = Hud.Game.AliveMonsters.Where(monster => MonsterBrushes.ContainsKey(monster.Rarity) && monster.NormalizedXyDistanceToMe > CloseEnoughRange);
+                var monsters = Hud.Game.AliveMonsters.Where(monster => MonsterBrushes.ContainsKey(monster.Rarity) && monster.NormalizedXyDistanceToMe > CloseEnoughRange && monster.SummonerAcdDynamicId == 0);
                 foreach (var monster in monsters)
                 {
                     var monsterScreenCoordinate = monster.FloorCoordinate.ToScreenCoordinate();
