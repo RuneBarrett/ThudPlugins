@@ -15,6 +15,7 @@ namespace Turbo.Plugins.RuneB
         public float WarningYPos { get; set; }
         public float WarningYPosIncr { get; set; }
         public float ArchonCDandRemainYPos { get; set; }
+        public float RashaIndicatorsYpos { get; set; }
 
         public GroundCircleDecorator ZeiRanceIndicator { get; set; }
         public TopLabelDecorator ArchonCDLabel { get; set; }
@@ -40,7 +41,7 @@ namespace Turbo.Plugins.RuneB
         private float hudWidth { get { return Hud.Window.Size.Width; } }
         private float hudHeight { get { return Hud.Window.Size.Height; } }
 
-        private float _lWidth, _lHeight, _lRashaSize, _lRashaYpos, _lRashaSizeMod, _arcCDRemain, _tick;
+        private float _lWidth, _lHeight, _lRashaSize, _lRashaSizeMod, _arcCDRemain, _tick;
         private bool _timerRunning = false;
 
         public ArchonWizPlugin()
@@ -72,7 +73,8 @@ namespace Turbo.Plugins.RuneB
             AlwaysShowElements = false;
             WarningYPos = 0.27f;
             WarningYPosIncr = 0.022f; // Distance between warnings
-            ArchonCDandRemainYPos = 0.5f; // Just below tal rasha icons = 0.605f;
+            ArchonCDandRemainYPos = 0.495f; // Just below tal rasha icons = 0.605f;
+            RashaIndicatorsYpos = 0.585f;
 
             WarningFont = Hud.Render.CreateFont("tahoma", 13f, 200, 255, 0, 0, false, false, true);
             ArchonCDFont = Hud.Render.CreateFont("tahoma", 12f, 255, 140, 140, 180, false, false, true);
@@ -100,7 +102,6 @@ namespace Turbo.Plugins.RuneB
             _lWidth = 80;
             _lHeight = 15;
             _lRashaSize = 24f;
-            _lRashaYpos = 0.585f;
             _lRashaSizeMod = 0.9f;
 
         }
@@ -176,30 +177,28 @@ namespace Turbo.Plugins.RuneB
 
         private void TalRashaElements(IPlayer me)
         {
-            RashaBackgroundBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.6f, hudHeight * _lRashaYpos - _lRashaSize * 0.1f, _lRashaSize * 4.1f, _lRashaSize * 1.1f);
+            RashaBackgroundBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.6f, hudHeight * RashaIndicatorsYpos - _lRashaSize * 0.1f, _lRashaSize * 4.1f, _lRashaSize * 1.1f);
 
-            if (me.Powers.BuffIsActive(429855, 1)) ArcaneBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.5f, hudHeight * _lRashaYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 1)) ArcaneBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.5f, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(-_lRashaSize * 1.5f);
 
-            if (me.Powers.BuffIsActive(429855, 2)) ColdBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize / 2, hudHeight * _lRashaYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 2)) ColdBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize / 2, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(-_lRashaSize / 2);
 
-            if (me.Powers.BuffIsActive(429855, 3)) FireBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize / 2, hudHeight * _lRashaYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 3)) FireBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize / 2, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(_lRashaSize / 2);
 
-            if (me.Powers.BuffIsActive(429855, 4)) LightningBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize * 1.5f, hudHeight * _lRashaYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 4)) LightningBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize * 1.5f, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(_lRashaSize * 1.5f);
         }
 
         private void DrawGreyBrush(float xPos)
         {
-            GreyBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + xPos, hudHeight * _lRashaYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            GreyBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + xPos, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
         }
 
-        //(DEPRECATED - use jack's *AlertList Plugin)
         private void DrawWarnings(IPlayer me) 
         {
-            if (!ShowWarnings) return;
             //IN ARCHON 
             if (me.Powers.BuffIsActive(134872, 2)) //Archon
             {

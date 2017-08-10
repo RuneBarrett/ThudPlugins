@@ -20,17 +20,25 @@ namespace Turbo.Plugins.RuneB
         {
             Hud.RunOnPlugin<RuneB.ArchonWizPlugin>(plugin =>
             {
-                plugin.ShowWarnings = true; // Disable if using jack's alertlistplugin
-                plugin.WarningYPos = 0.27f;
-                plugin.ShowInTown = true;
-                plugin.ShowZeiCircle = true;
-                plugin.ShowRashaElements = true;
-                plugin.ShowArchonCD = true;
-                plugin.ShowArchonRemain = true;
-                plugin.AlwaysShowElements = false; 
-                plugin.ArchonCDandRemainYPos = 0.5f; // Just below tal rasha icons = 0.605f;
-                plugin.WarningYPosIncr = 0.022f; // Distance between warnings
+                //General settings
+                //plugin.ShowWarnings = true; // Disable if using jack's alertlistplugin
+                //plugin.ShowInTown = true;
+                //plugin.ShowZeiCircle = true;
+                //plugin.ShowRashaElements = true;
+                //plugin.ShowArchonCD = true;
+                //plugin.ShowArchonRemain = true;
+                //plugin.AlwaysShowElements = false; 
+                //plugin.WarningYPosIncr = 0.022f; // Distance between warnings
 
+                //The following values (and the PositionOffset in PlayerBottomBuffListPlugin below) puts everything in the middle of the screen above the character.
+                //plugin.WarningYPos = 0.35f;
+                //plugin.ArchonCDandRemainYPos = 0.480f; // Just below tal rasha icons = 0.605f;
+                //plugin.RashaIndicatorsYpos = 0.415f;
+            });
+
+            Hud.RunOnPlugin<Default.PlayerBottomBuffListPlugin>(plugin =>
+            {
+                //plugin.PositionOffset = -0.05f; //On top of the character
             });
         }
     }
