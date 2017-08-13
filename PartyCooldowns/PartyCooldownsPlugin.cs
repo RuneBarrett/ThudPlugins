@@ -60,7 +60,10 @@ namespace Turbo.Plugins.RuneB
             WatchedSnos.Add(317076); //Inner Sanctuary
 
             //Witch Doctor
-            WatchedSnos.Add(79528); //Ignore Pain
+            WatchedSnos.Add(106237); //Spirit Walk
+
+            //Demon Hunter 
+            WatchedSnos.Add(365311); //Companion
 
             classShorts = new Dictionary<string, string>();
             classShorts.Add("Barbarian", "Barb");
@@ -94,47 +97,37 @@ namespace Turbo.Plugins.RuneB
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip) return;
-            if(size <= 0)
+            if (size <= 0)
                 size = hudWidth * SizeRatio;
 
             float xPos = hudWidth * StartXPos;
 
-                foreach (IPlayer player in Hud.Game.Players)
+            foreach (IPlayer player in Hud.Game.Players)
+            {
+                if (player.IsMe && !ShowSelf)
+                    continue;
+
+                bool firstIter = true;
+                foreach (int i in new int[] { 2, 3, 4, 5, 0, 1 })
                 {
-                    if (player.IsMe && !ShowSelf)
-                        continue;
 
-                    bool firstIter = true;
-                    foreach (int i in new int[] { 2, 3, 4, 5, 0, 1 })
+                    var skill = player.Powers.SkillSlots[i];
+                    if (skill != null && WatchedSnos.Contains(skill.SnoPower.Sno))
                     {
-                        
-                        var skill = player.Powers.SkillSlots[i];
-                        if (skill != null && WatchedSnos.Contains(skill.SnoPower.Sno))
+                        if (firstIter)
                         {
-                            if (firstIter)
-                            {
-                                var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.Name]+")");
-                                ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
-                                firstIter = false;
-                            }
-
-                            var rect = new RectangleF(xPos, hudHeight * (StartYPos + 0.03f), size, size);
-                            SkillPainter.Paint(skill, rect);
-                            xPos += size * 1.1f;
+                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.Name] + ")");
+                            ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
+                            firstIter = false;
                         }
+
+                        var rect = new RectangleF(xPos, hudHeight * (StartYPos + 0.03f), size, size);
+                        SkillPainter.Paint(skill, rect);
+                        xPos += size * 1.1f;
                     }
-                    xPos += size;
                 }
-        }
-    }
-
-    public class WatchedPower {
-        int sno { get; set; }
-        char priority { get; set; }
-
-        public WatchedPower(int sno, char priority) {
-            this.sno = sno;
-            this.priority = priority;
+                xPos += size;
+            }
         }
     }
 }
