@@ -222,8 +222,6 @@ namespace Turbo.Plugins.RuneB
                     var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + me.Powers.UsedWizardPowers.EnergyArmor.SnoPower.NameLocalized + " \u2996\u22EF");
                     if (!me.Powers.BuffIsActive(86991, 0) && !me.Powers.BuffIsActive(86991, 1) && !me.Powers.BuffIsActive(86991, 2) && !me.Powers.BuffIsActive(86991, 3) && !me.Powers.BuffIsActive(86991, 4) && !me.Powers.BuffIsActive(86991, 5)) 
                         WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (WarningYPos+WarningYPosIncr));
-                    //else if (!me.Powers.BuffIsActive(86991, 0))
-                        //WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (WarningYPos + WarningYPosIncr));
                 }
             }
         }
