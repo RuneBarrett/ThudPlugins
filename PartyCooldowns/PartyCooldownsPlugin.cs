@@ -10,12 +10,11 @@ namespace Turbo.Plugins.RuneB
     public class PartyCooldownsPlugin : BasePlugin, IInGameTopPainter
     {
         public SkillPainter SkillPainter { get; set; }
-        public float SizeRatio { get; set; }
         public TopLabelDecorator Label { get; set; }
         public IFont ClassFont { get; set; }
         public List<uint> WatchedSnos;
 
-
+        public float SizeRatio { get; set; }
         public float StartXPos { get; set; }
         public float StartYPos { get; set; }
         public float IconSize { get; set; }
@@ -45,25 +44,25 @@ namespace Turbo.Plugins.RuneB
 
             WatchedSnos = new List<uint>();
             //Necromancer
-            WatchedSnos.Add(465350); //Simulacrum
+            WatchedSnos.Add(465350); //Simulacrum  
             WatchedSnos.Add(465839); //Land of the Dead
 
             //Wizard
-            WatchedSnos.Add(134872); //Archon
+            //WatchedSnos.Add(134872); //Archon - PROBABLY BUGGING
 
             //Barb
             WatchedSnos.Add(79528); //Ignore Pain
             //WatchedSnos.Add(79607); //Wrath of the Berserker
-            WatchedSnos.Add(375483); //Warcry
+            //WatchedSnos.Add(375483); //Warcry
 
             //Monk
-            WatchedSnos.Add(317076); //Inner Sanctuary
+            //WatchedSnos.Add(317076); //Inner Sanctuary
 
             //Witch Doctor
-            WatchedSnos.Add(106237); //Spirit Walk
+            //WatchedSnos.Add(106237); //Spirit Walk
 
             //Demon Hunter 
-            WatchedSnos.Add(365311); //Companion
+            //WatchedSnos.Add(365311); //Companion
 
             classShorts = new Dictionary<string, string>();
             classShorts.Add("Barbarian", "Barb");
@@ -116,7 +115,7 @@ namespace Turbo.Plugins.RuneB
                     {
                         if (firstIter)
                         {
-                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.Name] + ")");
+                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + /*classShorts[*/player.HeroClassDefinition.Name/*]*/ + ")"); 
                             ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
                             firstIter = false;
                         }
@@ -126,7 +125,7 @@ namespace Turbo.Plugins.RuneB
                         xPos += size * 1.1f;
                     }
                 }
-                xPos += size;
+                xPos += size * 1.5f;
             }
         }
     }
