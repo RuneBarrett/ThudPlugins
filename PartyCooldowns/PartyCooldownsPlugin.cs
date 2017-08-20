@@ -19,6 +19,8 @@ namespace Turbo.Plugins.RuneB
         public float StartYPos { get; set; }
         public float IconSize { get; set; }
         public bool ShowSelf { get; set; }
+        public bool ShowInTown { get; set; }
+        public bool OnlyInGR { get; set; }
 
         private float size = 0;
         private float hudWidth { get { return Hud.Window.Size.Width; } }
@@ -33,22 +35,21 @@ namespace Turbo.Plugins.RuneB
 
         public override void Load(IController hud)
         {
+            ShowSelf = true;
+            ShowInTown = false;
+            OnlyInGR = false;
             base.Load(hud);
             SizeRatio = 0.02f;
             StartYPos = 0.002f;
             StartXPos = 0.555f;
             IconSize = 0.05f;
-            ShowSelf = true;
 
-            ClassFont = Hud.Render.CreateFont("tahoma", 7, 230, 255, 255, 255, true, false, 255, 0, 0, 0, true);
 
             WatchedSnos = new List<uint>();
+            //Add skills to the watch list below
             //Necromancer
             WatchedSnos.Add(465350); //Simulacrum  
             WatchedSnos.Add(465839); //Land of the Dead
-
-            //Wizard
-            //WatchedSnos.Add(134872); //Archon - PROBABLY BUGGING
 
             //Barb
             WatchedSnos.Add(79528); //Ignore Pain
@@ -63,6 +64,12 @@ namespace Turbo.Plugins.RuneB
 
             //Demon Hunter 
             //WatchedSnos.Add(365311); //Companion
+
+            //Wizard
+            //WatchedSnos.Add(134872); //Archon - PROBABLY BUGGING IN GREATER RIFT GROUPS (looking in to it)
+            //---------------------- 
+
+            ClassFont = Hud.Render.CreateFont("tahoma", 7, 230, 255, 255, 255, true, false, 255, 0, 0, 0, true);
 
             classShorts = new Dictionary<string, string>();
             classShorts.Add("Barbarian", "Barb");
@@ -95,7 +102,7 @@ namespace Turbo.Plugins.RuneB
 
         public void PaintTopInGame(ClipState clipState)
         {
-            if (clipState != ClipState.BeforeClip) return;
+            if (clipState != ClipState.BeforeClip || !ShowInTown && Hud.Game.Me.IsInTown || OnlyInGR && Hud.Game.SpecialArea != SpecialArea.GreaterRift) return;
             if (size <= 0)
                 size = hudWidth * SizeRatio;
 
@@ -105,7 +112,7 @@ namespace Turbo.Plugins.RuneB
             {
                 if (player.IsMe && !ShowSelf)
                     continue;
-
+                bool found = false; 
                 bool firstIter = true;
                 foreach (int i in new int[] { 2, 3, 4, 5, 0, 1 })
                 {
@@ -113,9 +120,10 @@ namespace Turbo.Plugins.RuneB
                     var skill = player.Powers.SkillSlots[i];
                     if (skill != null && WatchedSnos.Contains(skill.SnoPower.Sno))
                     {
+                        found = true;
                         if (firstIter)
                         {
-                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + /*classShorts[*/player.HeroClassDefinition.Name/*]*/ + ")"); 
+                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.Name] + ")"); 
                             ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
                             firstIter = false;
                         }
@@ -125,7 +133,8 @@ namespace Turbo.Plugins.RuneB
                         xPos += size * 1.1f;
                     }
                 }
-                xPos += size * 1.5f;
+                if (found)
+                    xPos += size * 1.1f;
             }
         }
     }
