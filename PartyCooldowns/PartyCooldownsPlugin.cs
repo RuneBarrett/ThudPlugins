@@ -25,7 +25,8 @@ namespace Turbo.Plugins.RuneB
         private float size = 0;
         private float hudWidth { get { return Hud.Window.Size.Width; } }
         private float hudHeight { get { return Hud.Window.Size.Height; } }
-        private Dictionary<string, string> classShorts;
+        private Dictionary<HeroClass, string> classShorts;
+        private int[] skillOrder = new int[] { 2, 3, 4, 5, 0, 1 };
 
 
         public PartyCooldownsPlugin()
@@ -71,14 +72,14 @@ namespace Turbo.Plugins.RuneB
 
             ClassFont = Hud.Render.CreateFont("tahoma", 7, 230, 255, 255, 255, true, false, 255, 0, 0, 0, true);
 
-            classShorts = new Dictionary<string, string>();
-            classShorts.Add("Barbarian", "Barb");
-            classShorts.Add("Monk", "Monk");
-            classShorts.Add("Necromancer", "Necro");
-            classShorts.Add("Wizard", "Wiz");
-            classShorts.Add("Witch Doctor", "WD");
-            classShorts.Add("Crusader", "Sader");
-            classShorts.Add("Demon Hunter", "DH");
+            classShorts = new Dictionary<HeroClass, string>();
+            classShorts.Add(HeroClass.Barbarian, "Barb");
+            classShorts.Add(HeroClass.Monk, "Monk");
+            classShorts.Add(HeroClass.Necromancer, "Necro");
+            classShorts.Add(HeroClass.Wizard, "Wiz");
+            classShorts.Add(HeroClass.WitchDoctor, "WD");
+            classShorts.Add(HeroClass.Crusader, "Sader");
+            classShorts.Add(HeroClass.DemonHunter, "DH");
 
             SkillPainter = new SkillPainter(Hud, true)
             {
@@ -114,7 +115,7 @@ namespace Turbo.Plugins.RuneB
                     continue;
                 bool found = false; 
                 bool firstIter = true;
-                foreach (int i in new int[] { 2, 3, 4, 5, 0, 1 })
+                foreach (int i in skillOrder)
                 {
 
                     var skill = player.Powers.SkillSlots[i];
@@ -123,7 +124,7 @@ namespace Turbo.Plugins.RuneB
                         found = true;
                         if (firstIter)
                         {
-                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.Name] + ")"); 
+                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.HeroClass] + ")"); 
                             ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
                             firstIter = false;
                         }
