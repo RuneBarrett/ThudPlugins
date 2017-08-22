@@ -12,6 +12,7 @@ namespace Turbo.Plugins.RuneB
         public bool ShowArchonCD { get; set; }
         public bool ShowArchonRemain { get; set; }
         public bool AlwaysShowElements { get; set; }
+        public bool AlwaysShowZei { get; set; }
         public float WarningYPos { get; set; }
         public float WarningYPosIncr { get; set; }
         public float ArchonCDandRemainYPos { get; set; }
@@ -71,6 +72,7 @@ namespace Turbo.Plugins.RuneB
             ShowArchonCD = true;
             ShowArchonRemain = true;
             AlwaysShowElements = false;
+            AlwaysShowZei = false;
             WarningYPos = 0.27f;
             WarningYPosIncr = 0.022f; // Distance between warnings
             ArchonCDandRemainYPos = 0.495f; // Just below tal rasha icons = 0.605f;
@@ -116,7 +118,7 @@ namespace Turbo.Plugins.RuneB
                 UpdateSkills(me);
 
                 //If Disentegration Wave is channelled, draw zei circle
-                if (me.Powers.BuffIsActive(392891, 4) && ShowZeiCircle)
+                if ((me.Powers.BuffIsActive(392891, 4) || AlwaysShowZei) && ShowZeiCircle)
                     ZeiRanceIndicator.Paint(me, me.FloorCoordinate, null);
              
                 //Draw missing buff warnings 
