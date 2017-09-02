@@ -26,8 +26,7 @@ namespace Turbo.Plugins.RuneB
         private float hudWidth { get { return Hud.Window.Size.Width; } }
         private float hudHeight { get { return Hud.Window.Size.Height; } }
         private Dictionary<HeroClass, string> classShorts;
-        private int[] skillOrder = new int[] { 2, 3, 4, 5, 0, 1 };
-
+        private readonly int[] skillOrder = new int[] { 2, 3, 4, 5, 0, 1 };
 
         public PartyCooldownsPlugin()
         {
@@ -72,14 +71,16 @@ namespace Turbo.Plugins.RuneB
 
             ClassFont = Hud.Render.CreateFont("tahoma", 7, 230, 255, 255, 255, true, false, 255, 0, 0, 0, true);
 
-            classShorts = new Dictionary<HeroClass, string>();
-            classShorts.Add(HeroClass.Barbarian, "Barb");
-            classShorts.Add(HeroClass.Monk, "Monk");
-            classShorts.Add(HeroClass.Necromancer, "Necro");
-            classShorts.Add(HeroClass.Wizard, "Wiz");
-            classShorts.Add(HeroClass.WitchDoctor, "WD");
-            classShorts.Add(HeroClass.Crusader, "Sader");
-            classShorts.Add(HeroClass.DemonHunter, "DH");
+            classShorts = new Dictionary<HeroClass, string>
+            {
+                {HeroClass.Barbarian, "Barb"},
+                {HeroClass.Monk, "Monk"},
+                {HeroClass.Necromancer, "Necro"},
+                {HeroClass.Wizard, "Wiz"},
+                {HeroClass.WitchDoctor, "WD"},
+                {HeroClass.Crusader, "Sader"},
+                {HeroClass.DemonHunter, "DH"}
+            };
 
             SkillPainter = new SkillPainter(Hud, true)
             {
@@ -109,30 +110,27 @@ namespace Turbo.Plugins.RuneB
 
             float xPos = hudWidth * StartXPos;
 
-            foreach (IPlayer player in Hud.Game.Players)
+            foreach (var player in Hud.Game.Players)
             {
                 if (player.IsMe && !ShowSelf)
                     continue;
-                bool found = false; 
-                bool firstIter = true;
-                foreach (int i in skillOrder)
+                var found = false; 
+                var firstIter = true;
+                foreach (var i in skillOrder)
                 {
-
                     var skill = player.Powers.SkillSlots[i];
-                    if (skill != null && WatchedSnos.Contains(skill.SnoPower.Sno))
+                    if (skill == null || !WatchedSnos.Contains(skill.SnoPower.Sno)) continue;
+                    found = true;
+                    if (firstIter)
                     {
-                        found = true;
-                        if (firstIter)
-                        {
-                            var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.HeroClass] + ")"); 
-                            ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
-                            firstIter = false;
-                        }
-
-                        var rect = new RectangleF(xPos, hudHeight * (StartYPos + 0.03f), size, size);
-                        SkillPainter.Paint(skill, rect);
-                        xPos += size * 1.1f;
+                        var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.HeroClass] + ")"); 
+                        ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
+                        firstIter = false;
                     }
+
+                    var rect = new RectangleF(xPos, hudHeight * (StartYPos + 0.03f), size, size);
+                    SkillPainter.Paint(skill, rect);
+                    xPos += size * 1.1f;
                 }
                 if (found)
                     xPos += size * 1.1f;

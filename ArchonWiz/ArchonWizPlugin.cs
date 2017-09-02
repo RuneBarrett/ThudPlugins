@@ -35,12 +35,12 @@ namespace Turbo.Plugins.RuneB
         public IBrush ColdBrush { get; set; }
         public IBrush GreyBrush { get; set; }
 
-        private IPlayerSkill archonSkill;
-        private IPlayerSkill magicWeaponSkill;
-        private IPlayerSkill energyArmorSkill;
+        private IPlayerSkill _archonSkill;
+        private IPlayerSkill _magicWeaponSkill;
+        private IPlayerSkill _energyArmorSkill;
 
-        private float hudWidth { get { return Hud.Window.Size.Width; } }
-        private float hudHeight { get { return Hud.Window.Size.Height; } }
+        private float HudWidth{get {return Hud.Window.Size.Width; }}
+        private float HudHeight{get { return Hud.Window.Size.Height; }}
 
         private float _lWidth, _lHeight, _lRashaSize, _lRashaSizeMod, _arcCDRemain, _tick;
         private bool _timerRunning = false;
@@ -97,7 +97,7 @@ namespace Turbo.Plugins.RuneB
             ArchonCooldownLabel = new TopLabelDecorator(Hud)
             {
                 TextFont = Hud.Render.CreateFont("tahoma", 10f, 255, 140, 140, 180, false, false, 160, 0, 0, 0, true),
-                TextFunc = () => ArchonCooldown(),
+                TextFunc = ArchonCooldown,
             };
 
             // Private vars
@@ -130,11 +130,11 @@ namespace Turbo.Plugins.RuneB
                     TalRashaElements(me);
 
                 //Draw Archon cooldown
-                if (archonSkill != null && ShowArchonCD)
-                    ArchonCooldownLabel.Paint(hudWidth * 0.5f - _lWidth / 2, hudHeight * (ArchonCDandRemainYPos+0.015f), _lWidth, _lHeight, HorizontalAlign.Center);
+                if (_archonSkill != null && ShowArchonCD)
+                    ArchonCooldownLabel.Paint(HudWidth * 0.5f - _lWidth / 2, HudHeight * (ArchonCDandRemainYPos+0.015f), _lWidth, _lHeight, HorizontalAlign.Center);
 
                 //Draw Archon time remaining
-                if (archonSkill != null && ShowArchonRemain)
+                if (_archonSkill != null && ShowArchonRemain)
                     ArchonRemaining(me);
             }
         }
@@ -142,9 +142,9 @@ namespace Turbo.Plugins.RuneB
         public string ArchonCooldown()
         {
             string s = "";
-            if (archonSkill.CooldownFinishTick > Hud.Game.CurrentGameTick)
+            if (_archonSkill.CooldownFinishTick > Hud.Game.CurrentGameTick)
             {
-                var c = (archonSkill.CooldownFinishTick - Hud.Game.CurrentGameTick) / 60.0d;
+                var c = (_archonSkill.CooldownFinishTick - Hud.Game.CurrentGameTick) / 60.0d;
                 s = string.Format("\u267F {0:N1} \u267F", c);
             }
             return s;
@@ -162,7 +162,7 @@ namespace Turbo.Plugins.RuneB
                 if (r > 3f)
                 {
                     var layout = ArchonRemainFont.GetTextLayout(string.Format("{0:N1}", r));
-                    ArchonRemainFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (ArchonCDandRemainYPos + 0.015f));
+                    ArchonRemainFont.DrawText(layout, HudWidth * 0.5f - (layout.Metrics.Width * 0.5f), HudHeight * (ArchonCDandRemainYPos + 0.015f));
                 }
                 else
                 {
@@ -171,7 +171,7 @@ namespace Turbo.Plugins.RuneB
                     if (r <= 2 && r > 1) str = string.Format("\u231B {0:N1} \u231B", r);
                     if (r <= 1) str = string.Format("\u25B6 {0:N1} \u25C0", r);
                     var layout = ArchonRemainSoonFont.GetTextLayout(str);
-                    ArchonRemainSoonFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (ArchonCDandRemainYPos + 0.005f));
+                    ArchonRemainSoonFont.DrawText(layout, HudWidth * 0.5f - (layout.Metrics.Width * 0.5f), HudHeight * (ArchonCDandRemainYPos + 0.005f));
                 }
             }
             else _timerRunning = false;
@@ -179,24 +179,24 @@ namespace Turbo.Plugins.RuneB
 
         private void TalRashaElements(IPlayer me)
         {
-            RashaBackgroundBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.6f, hudHeight * RashaIndicatorsYpos - _lRashaSize * 0.1f, _lRashaSize * 4.1f, _lRashaSize * 1.1f);
+            RashaBackgroundBrush.DrawRectangle((HudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.6f, HudHeight * RashaIndicatorsYpos - _lRashaSize * 0.1f, _lRashaSize * 4.1f, _lRashaSize * 1.1f);
 
-            if (me.Powers.BuffIsActive(429855, 1)) ArcaneBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.5f, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 1)) ArcaneBrush.DrawRectangle((HudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize * 1.5f, HudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(-_lRashaSize * 1.5f);
 
-            if (me.Powers.BuffIsActive(429855, 2)) ColdBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize / 2, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 2)) ColdBrush.DrawRectangle((HudWidth * 0.5f - _lRashaSize * .5f) - _lRashaSize / 2, HudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(-_lRashaSize / 2);
 
-            if (me.Powers.BuffIsActive(429855, 3)) FireBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize / 2, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 3)) FireBrush.DrawRectangle((HudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize / 2, HudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(_lRashaSize / 2);
 
-            if (me.Powers.BuffIsActive(429855, 4)) LightningBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize * 1.5f, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            if (me.Powers.BuffIsActive(429855, 4)) LightningBrush.DrawRectangle((HudWidth * 0.5f - _lRashaSize * .5f) + _lRashaSize * 1.5f, HudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
             else DrawGreyBrush(_lRashaSize * 1.5f);
         }
 
         private void DrawGreyBrush(float xPos)
         {
-            GreyBrush.DrawRectangle((hudWidth * 0.5f - _lRashaSize * .5f) + xPos, hudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
+            GreyBrush.DrawRectangle((HudWidth * 0.5f - _lRashaSize * .5f) + xPos, HudHeight * RashaIndicatorsYpos, _lRashaSize * _lRashaSizeMod, _lRashaSize * _lRashaSizeMod);
         }
 
         private void DrawWarnings(IPlayer me) 
@@ -207,38 +207,38 @@ namespace Turbo.Plugins.RuneB
                 if (!me.Powers.BuffIsActive(135663, 0)) //Slow Time
                 {
                     var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + /*me.Powers.GetBuff(135663).SnoPower.NameLocalized*/"Bubble Up" + " \u2996\u22EF"); // UsedWizardPowers returns "Archon" instead of "Slow Time" so i used GetBuff() instead 
-                    WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * WarningYPos);
+                    WarningFont.DrawText(layout, HudWidth * 0.5f - (layout.Metrics.Width * 0.5f), HudHeight * WarningYPos);
                 }
             }
             else
             {//NOT IN ARCHON
-                if (magicWeaponSkill != null)
+                if (_magicWeaponSkill != null)
                 {
                     var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + Hud.Sno.SnoPowers.Wizard_MagicWeapon.NameLocalized + " \u2996\u22EF");
                     if (!me.Powers.BuffIsActive(76108, 0))
-                        WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * WarningYPos);
+                        WarningFont.DrawText(layout, HudWidth * 0.5f - (layout.Metrics.Width * 0.5f), HudHeight * WarningYPos);
                 }
 
-                if (energyArmorSkill != null)
+                if (_energyArmorSkill != null)
                 {
                     var layout = WarningFont.GetTextLayout("\u22EF\u2995 " + Hud.Sno.SnoPowers.Wizard_EnergyArmor.NameLocalized + " \u2996\u22EF");
                     if (!me.Powers.BuffIsActive(86991, 0) && !me.Powers.BuffIsActive(86991, 1) && !me.Powers.BuffIsActive(86991, 2) && !me.Powers.BuffIsActive(86991, 3) && !me.Powers.BuffIsActive(86991, 4) && !me.Powers.BuffIsActive(86991, 5)) 
-                        WarningFont.DrawText(layout, hudWidth * 0.5f - (layout.Metrics.Width * 0.5f), hudHeight * (WarningYPos+WarningYPosIncr));
+                        WarningFont.DrawText(layout, HudWidth * 0.5f - (layout.Metrics.Width * 0.5f), HudHeight * (WarningYPos+WarningYPosIncr));
                 }
             }
         }
 
         private void UpdateSkills(IPlayer me)
         {
-            archonSkill = null;
-            magicWeaponSkill = null;
-            energyArmorSkill = null;
+            _archonSkill = null;
+            _magicWeaponSkill = null;
+            _energyArmorSkill = null;
             me.Powers.UsedSkills.ForEach(skill =>
             {
                 
-                if (skill.SnoPower.Sno == 134872) archonSkill = skill;
-                if (skill.SnoPower.Sno == 76108) magicWeaponSkill = skill;
-                if (skill.SnoPower.Sno == 86991) energyArmorSkill = skill;
+                if (skill.SnoPower.Sno == 134872) _archonSkill = skill;
+                if (skill.SnoPower.Sno == 76108) _magicWeaponSkill = skill;
+                if (skill.SnoPower.Sno == 86991) _energyArmorSkill = skill;
             });
         }
     }
