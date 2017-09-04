@@ -42,8 +42,8 @@ namespace Turbo.Plugins.RuneB
                 //plugin.GizmoBrushes.Add(GizmoType.HealingWell, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 250, 0, 0, 0)));
 
                 //--------------- EDIT MONSTER/GIZMO BRUSH OR ANIMATION ------------------
-                plugin.MonsterBrushes[ActorRarity.Rare].brush = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
-                plugin.MonsterBrushes[ActorRarity.Rare].anim = RuneB.Line.AnimType.WidthMod;
+                plugin.MonsterBrushes[ActorRarity.Rare].Brush = Hud.Render.CreateBrush(100, 255, 128, 0, 0);
+                plugin.MonsterBrushes[ActorRarity.Rare].Anim = RuneB.Line.AnimType.WidthMod;
                 //plugin.MonsterBrushes[ActorRarity.Rare].anim = RuneB.Line.AnimType.None;
 
                 //--------------- REMOVE DEFAULT MONSTER TYPE------------------

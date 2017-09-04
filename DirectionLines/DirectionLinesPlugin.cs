@@ -22,7 +22,7 @@ namespace Turbo.Plugins.RuneB
         public Dictionary<ActorRarity, Line> MonsterBrushes { get; set; }
         public Dictionary<GizmoType, Line> GizmoBrushes { get; set; }
 
-        private IScreenCoordinate center { get { return Hud.Game.Me.ScreenCoordinate; } }
+        private IScreenCoordinate Center { get { return Hud.Game.Me.ScreenCoordinate; } }
 
         private float _opacityMod = 0.04f;
         private float _opacity = 0.01f;
@@ -51,10 +51,12 @@ namespace Turbo.Plugins.RuneB
             TextDistanceAway = 160;
             StrokeWidth = 3;
 
-            MonsterBrushes = new Dictionary<ActorRarity, Line>();
-            MonsterBrushes.Add(ActorRarity.Rare, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 255, 128, 0, 0)));
-            MonsterBrushes.Add(ActorRarity.Champion, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 0, 128, 255, 0)));
-            MonsterBrushes.Add(ActorRarity.Boss, new Line(Line.AnimType.None, Hud.Render.CreateBrush(100, 255, 208, 0, 0)));
+            MonsterBrushes = new Dictionary<ActorRarity, Line>
+            {
+                {ActorRarity.Rare, new Line(Line.AnimType.Fade, Hud.Render.CreateBrush(100, 255, 128, 0, 0))},
+                {ActorRarity.Champion, new Line(Line.AnimType.WidthMod, Hud.Render.CreateBrush(100, 0, 128, 255, 0))},
+                {ActorRarity.Boss, new Line(Line.AnimType.None, Hud.Render.CreateBrush(100, 255, 208, 0, 0))}
+            };
 
             GizmoBrushes = new Dictionary<GizmoType, Line>();
         }
@@ -76,13 +78,15 @@ namespace Turbo.Plugins.RuneB
                 foreach (var monster in monsters)
                 {
                     var monsterScreenCoordinate = monster.FloorCoordinate.ToScreenCoordinate();
-                    if (monster.NormalizedXyDistanceToMe < HitRange) { DrawLine(monsterScreenCoordinate, MonsterBrushes[monster.Rarity], false); }
-                    else DrawLine(monsterScreenCoordinate, MonsterBrushes[monster.Rarity], true);
+                    if (!(monster.NormalizedXyDistanceToMe < HitRange))
+                        DrawLine(monsterScreenCoordinate, MonsterBrushes[monster.Rarity], true);
+                    else
+                        DrawLine(monsterScreenCoordinate, MonsterBrushes[monster.Rarity], false);
 
                     if (MonsterDistanceTextEnabled) //Draw text
                     {
                         var layout = TextFont.GetTextLayout(string.Format("{0:N0}", monster.NormalizedXyDistanceToMe));
-                        var p = PointOnLine(center.X, center.Y, monsterScreenCoordinate.X, monsterScreenCoordinate.Y, textDistanceAway);
+                        var p = PointOnLine(Center.X, Center.Y, monsterScreenCoordinate.X, monsterScreenCoordinate.Y, textDistanceAway);
                         TextFont.DrawText(layout, p.X, p.Y);
                         textDistanceAway += 30; // avoid text overlap
                     }
@@ -92,8 +96,8 @@ namespace Turbo.Plugins.RuneB
             //Gizmo lines
             if ((GizmoLinesEnabled && !Hud.Game.IsInTown) || Debug)
             {
-                var Gizmos = Hud.Game.Actors.Where(actor => GizmoBrushes.ContainsKey(actor.GizmoType));
-                foreach (var gizmo in Gizmos)
+                var gizmos = Hud.Game.Actors.Where(actor => GizmoBrushes.ContainsKey(actor.GizmoType));
+                foreach (var gizmo in gizmos)
                 {
                     if (gizmo.IsOperated) continue;
                     var gizmoPos = gizmo.FloorCoordinate.ToScreenCoordinate();
@@ -121,30 +125,32 @@ namespace Turbo.Plugins.RuneB
 
         private void DrawLine(IScreenCoordinate objectPosition, Line line, bool grey)
         {
-            var start = PointOnLine(center.X, center.Y, objectPosition.X, objectPosition.Y, 60);
-            var end = PointOnLine(objectPosition.X, objectPosition.Y - 30, center.X, center.Y, 20);
+            var start = PointOnLine(Center.X, Center.Y, objectPosition.X, objectPosition.Y, 60);
+            var end = PointOnLine(objectPosition.X, objectPosition.Y - 30, Center.X, Center.Y, 20);
             if (grey)
             {
                 GreyBrush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.5f);
                 return;
             }
 
-            switch (line.anim)
+            switch (line.Anim)
             {
                 case Line.AnimType.None:
-                    line.brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.8f);
+                    line.Brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.8f);
                     break;
                 case Line.AnimType.Blink:
                     if ((Hud.Game.CurrentRealTimeMilliseconds / 700) % 2 == 0)
-                        line.brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.6f);
+                        line.Brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.6f);
                     break;
                 case Line.AnimType.Fade:
-                    line.brush.Opacity = _opacity;
-                    line.brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.8f);
+                    line.Brush.Opacity = _opacity;
+                    line.Brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * 0.8f);
                     break;
                 case Line.AnimType.WidthMod:
-                    line.brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * _lineWidth);
+                    line.Brush.DrawLine(start.X, start.Y, end.X, end.Y, StrokeWidth * _lineWidth);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -163,14 +169,13 @@ namespace Turbo.Plugins.RuneB
     public class Line
     {
         public enum AnimType { Blink, Fade, WidthMod, None }
-        public AnimType anim { get; set; }
-        public IBrush brush { get; set; }
-        private AnimType blink { get; set; }
+        public AnimType Anim { get; set; }
+        public IBrush Brush { get; set; }
 
         public Line(AnimType anim, IBrush brush)
         {
-            this.anim = anim;
-            this.brush = brush;
+            this.Anim = anim;
+            this.Brush = brush;
         }
     }
 }
