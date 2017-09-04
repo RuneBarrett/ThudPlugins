@@ -19,6 +19,8 @@ namespace Turbo.Plugins.RuneB
 
         private float HudWidth { get { return Hud.Window.Size.Width; } }
         private float HudHeight { get { return Hud.Window.Size.Height; } }
+        private bool missingIP, tooFar;
+        private string warningStr = "";
 
         public SuppBarbPlugin()
         {
@@ -63,7 +65,7 @@ namespace Turbo.Plugins.RuneB
 
         public void PaintWorld(WorldLayer layer)
         {
-            if (!ShowHealthGlobes || !ShowHealthGlobesOnNonBarb && Hud.Game.Me.HeroClassDefinition.HeroClass != HeroClass.Barbarian) return;
+            if (!ShowHealthGlobes || !ShowHealthGlobesOnNonBarb && Hud.Game.Me.HeroClassDefinition.HeroClass != HeroClass.Barbarian || Hud.Game.Me.IsInTown) return;
             var actors = Hud.Game.Actors.Where(x => x.SnoActor.Kind == ActorKind.HealthGlobe);
             foreach (var actor in actors)
             {
@@ -77,25 +79,41 @@ namespace Turbo.Plugins.RuneB
             if (clipState != ClipState.BeforeClip || Hud.Game.Me.HeroClassDefinition.HeroClass != HeroClass.Barbarian) return;
 
             foreach (var player in Hud.Game.Players.Where(p => p.SnoArea.Sno == Hud.Game.Me.SnoArea.Sno))
-                DrawPlayerWarnings(player);                            
+                DrawPlayerWarnings(player);
+
+            if (missingIP)
+                warningStr += "\u2620";
+            if (tooFar)
+                warningStr += "\u2757";
+
+            var textlayout = WarningFont.GetTextLayout(warningStr);
+            WarningFont.DrawText(textlayout, HudWidth * 0.96f, HudHeight * 0.26f);
+            missingIP = false;
+            tooFar = false;
+            warningStr = "";
         }
 
         private void DrawPlayerWarnings(IPlayer player)
         {
             var warning = "";
             var portraitRect = player.PortraitUiElement.Rectangle;
-            var yPos = portraitRect.Y + YOffset*HudHeight;
-            var xPos = portraitRect.X + XOffset*HudWidth;
+            var yPos = portraitRect.Y + YOffset * HudHeight;
+            var xPos = portraitRect.X + XOffset * HudWidth;
 
             if (!player.Powers.BuffIsActive(79528, 0) && !player.Powers.BuffIsActive(79528, 1)) //no ip
+            {
+                missingIP = true;
                 warning += "\u2620";
-
-            if (player.NormalizedXyDistanceToMe > 50f)//to far away
+            }
+            if (player.NormalizedXyDistanceToMe > 50f) //to far away
+            {
+                tooFar = true;
                 warning += "\u2757";
+            }
 
             var textlayout = WarningFont.GetTextLayout(warning);
             WarningFont.DrawText(textlayout, xPos, yPos);
-            WarningFont.DrawText(textlayout, HudWidth*0.965f,HudHeight*0.26f);
+            //WarningFont.DrawText(textlayout, HudWidth*0.96f,HudHeight*0.26f);
         }
     }
 }
