@@ -19,14 +19,15 @@ namespace Turbo.Plugins.RuneB
         public float StartYPos { get; set; }
         public float IconSize { get; set; }
         public bool ShowSelf { get; set; }
+        public bool ShowOnlyMe { get; set; }
         public bool ShowInTown { get; set; }
         public bool OnlyInGR { get; set; }
 
-        private float size = 0;
-        private float hudWidth { get { return Hud.Window.Size.Width; } }
-        private float hudHeight { get { return Hud.Window.Size.Height; } }
-        private Dictionary<HeroClass, string> classShorts;
-        private readonly int[] skillOrder = new int[] { 2, 3, 4, 5, 0, 1 };
+        private float _size = 0;
+        private float HudWidth { get { return Hud.Window.Size.Width; } }
+        private float HudHeight { get { return Hud.Window.Size.Height; } }
+        private Dictionary<HeroClass, string> _classShorts;
+        private readonly int[] _skillOrder = { 2, 3, 4, 5, 0, 1 };
 
         public PartyCooldownsPlugin()
         {
@@ -36,8 +37,9 @@ namespace Turbo.Plugins.RuneB
         public override void Load(IController hud)
         {
             ShowSelf = true;
-            ShowInTown = false;
+            ShowInTown = true;
             OnlyInGR = false;
+            ShowOnlyMe = false;
             base.Load(hud);
             SizeRatio = 0.02f;
             StartYPos = 0.002f;
@@ -45,33 +47,34 @@ namespace Turbo.Plugins.RuneB
             IconSize = 0.05f;
 
 
-            WatchedSnos = new List<uint>();
-            //Add skills to the watch list below
-            //Necromancer
-            WatchedSnos.Add(465350); //Simulacrum  
-            WatchedSnos.Add(465839); //Land of the Dead
+            WatchedSnos = new List<uint>
+            {
+                //Add skills to the watch list below
+                //--- Necromancer
+                465350, //Simulacrum  
+                465839, //Land of the Dead
 
-            //Barb
-            WatchedSnos.Add(79528); //Ignore Pain
-            //WatchedSnos.Add(79607); //Wrath of the Berserker
-            //WatchedSnos.Add(375483); //Warcry
+                //--- Barb
+                79528, //Ignore Pain
+                //79607, //Wrath of the Berserker
+                //375483, //Warcry
 
-            //Monk
-            //WatchedSnos.Add(317076); //Inner Sanctuary
+                //--- Monk
+                //317076, //Inner Sanctuary
 
-            //Witch Doctor
-            //WatchedSnos.Add(106237); //Spirit Walk
+                //--- Witch Doctor
+                //106237, //Spirit Walk
 
-            //Demon Hunter 
-            //WatchedSnos.Add(365311); //Companion
+                //--- Demon Hunter 
+                //365311, //Companion
 
-            //Wizard
-            //WatchedSnos.Add(134872); //Archon - PROBABLY BUGGING IN GREATER RIFT GROUPS (looking in to it)
-            //---------------------- 
+                //--- Wizard
+                //134872 //Archon - Needs testing, dont use for now
+            };
 
             ClassFont = Hud.Render.CreateFont("tahoma", 7, 230, 255, 255, 255, true, false, 255, 0, 0, 0, true);
 
-            classShorts = new Dictionary<HeroClass, string>
+            _classShorts = new Dictionary<HeroClass, string>
             {
                 {HeroClass.Barbarian, "Barb"},
                 {HeroClass.Monk, "Monk"},
@@ -105,35 +108,35 @@ namespace Turbo.Plugins.RuneB
         public void PaintTopInGame(ClipState clipState)
         {
             if (clipState != ClipState.BeforeClip || !ShowInTown && Hud.Game.Me.IsInTown || OnlyInGR && Hud.Game.SpecialArea != SpecialArea.GreaterRift) return;
-            if (size <= 0)
-                size = hudWidth * SizeRatio;
+            if (_size <= 0)
+                _size = HudWidth * SizeRatio;
 
-            float xPos = hudWidth * StartXPos;
+            var xPos = HudWidth * StartXPos;
 
-            foreach (var player in Hud.Game.Players)
+            foreach (var player in Hud.Game.Players.OrderBy(p => p.HeroId))
             {
-                if (player.IsMe && !ShowSelf)
+                if (player.IsMe && !ShowSelf || !player.IsMe && ShowOnlyMe)
                     continue;
                 var found = false; 
                 var firstIter = true;
-                foreach (var i in skillOrder)
+                foreach (var i in _skillOrder)
                 {
                     var skill = player.Powers.SkillSlots[i];
                     if (skill == null || !WatchedSnos.Contains(skill.SnoPower.Sno)) continue;
                     found = true;
                     if (firstIter)
                     {
-                        var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + classShorts[player.HeroClassDefinition.HeroClass] + ")"); 
-                        ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), hudHeight * StartYPos);
+                        var layout = ClassFont.GetTextLayout(player.BattleTagAbovePortrait + "\n(" + _classShorts[player.HeroClassDefinition.HeroClass] + ")"); 
+                        ClassFont.DrawText(layout, xPos - (layout.Metrics.Width * 0.1f), HudHeight * StartYPos);
                         firstIter = false;
                     }
 
-                    var rect = new RectangleF(xPos, hudHeight * (StartYPos + 0.03f), size, size);
+                    var rect = new RectangleF(xPos, HudHeight * (StartYPos + 0.03f), _size, _size);
                     SkillPainter.Paint(skill, rect);
-                    xPos += size * 1.1f;
+                    xPos += _size * 1.1f;
                 }
                 if (found)
-                    xPos += size * 1.1f;
+                    xPos += _size * 1.1f;
             }
         }
     }
