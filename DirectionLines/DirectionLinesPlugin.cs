@@ -78,32 +78,25 @@ namespace Turbo.Plugins.RuneB
                 foreach (var monster in monsters)
                 {
                     var monsterScreenCoordinate = monster.FloorCoordinate.ToScreenCoordinate();
-                    if (!(monster.NormalizedXyDistanceToMe < HitRange))
-                        DrawLine(monsterScreenCoordinate, MonsterBrushes[monster.Rarity], true);
-                    else
-                        DrawLine(monsterScreenCoordinate, MonsterBrushes[monster.Rarity], false);
+                    DrawLine(monsterScreenCoordinate, MonsterBrushes[monster.Rarity], !(monster.NormalizedXyDistanceToMe < HitRange));
 
-                    if (MonsterDistanceTextEnabled) //Draw text
-                    {
-                        var layout = TextFont.GetTextLayout(string.Format("{0:N0}", monster.NormalizedXyDistanceToMe));
-                        var p = PointOnLine(Center.X, Center.Y, monsterScreenCoordinate.X, monsterScreenCoordinate.Y, textDistanceAway);
-                        TextFont.DrawText(layout, p.X, p.Y);
-                        textDistanceAway += 30; // avoid text overlap
-                    }
+                    if (!MonsterDistanceTextEnabled) continue;
+                    var layout = TextFont.GetTextLayout(string.Format("{0:N0}", monster.NormalizedXyDistanceToMe));
+                    var p = PointOnLine(Center.X, Center.Y, monsterScreenCoordinate.X, monsterScreenCoordinate.Y, textDistanceAway);
+                    TextFont.DrawText(layout, p.X, p.Y);
+                    textDistanceAway += 30; // avoid text overlap
                 }
             }
 
             //Gizmo lines
-            if ((GizmoLinesEnabled && !Hud.Game.IsInTown) || Debug)
+            if ((!GizmoLinesEnabled || Hud.Game.IsInTown) && !Debug) return;
+            var gizmos = Hud.Game.Actors.Where(actor => GizmoBrushes.ContainsKey(actor.GizmoType));
+            foreach (var gizmo in gizmos)
             {
-                var gizmos = Hud.Game.Actors.Where(actor => GizmoBrushes.ContainsKey(actor.GizmoType));
-                foreach (var gizmo in gizmos)
-                {
-                    if (gizmo.IsOperated) continue;
-                    var gizmoPos = gizmo.FloorCoordinate.ToScreenCoordinate();
-                    var gizmoLine = GizmoBrushes[gizmo.GizmoType];
-                    DrawLine(gizmoPos, gizmoLine, false);
-                }
+                if (gizmo.IsOperated) continue;
+                var gizmoPos = gizmo.FloorCoordinate.ToScreenCoordinate();
+                var gizmoLine = GizmoBrushes[gizmo.GizmoType];
+                DrawLine(gizmoPos, gizmoLine, false);
             }
         }
 
