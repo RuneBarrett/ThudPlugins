@@ -78,7 +78,7 @@ namespace Turbo.Plugins.RuneB
             Debug = false;
             SmoothMovement = true;
             SmoothSpeed = 0.05f;
-            debugWatch = Hud.CreateWatch();
+            debugWatch = Hud.Time.CreateWatch();
             debugWatch.Restart();
 
             BorderBrush = Hud.Render.CreateBrush(150, 30, 30, 30, 0);

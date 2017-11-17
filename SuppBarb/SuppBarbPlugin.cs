@@ -113,7 +113,6 @@ namespace Turbo.Plugins.RuneB
 
             var textlayout = WarningFont.GetTextLayout(warning);
             WarningFont.DrawText(textlayout, xPos, yPos);
-            //WarningFont.DrawText(textlayout, HudWidth*0.96f,HudHeight*0.26f);
         }
     }
 }
